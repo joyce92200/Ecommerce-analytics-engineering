@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-specific
+data/raw/*.xlsx
+data/raw/*.csv
+data/processed/*
+!data/processed/.gitkeep
+data/outputs/*
+!data/outputs/.gitkeep
+.env
+.duckdb
+*.duckdb
+.venv/
