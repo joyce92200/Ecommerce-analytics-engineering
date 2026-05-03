@@ -47,12 +47,12 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 | Question | Finding |
 |---|---|
-| **Revenue by category, MoM** | Audio +18% QoQ, driven by Q4 promotions |
-| **Return rate by segment** | New customers return 2.3× more than repeat |
-| **90-day repeat rate by channel** | Organic search: 31%. Paid social: 9%. |
-| **12-month retention by cohort** | Retention is structurally low and stable: ~1% month-1 across all 48 cohorts (Jan 2019 – Dec 2022). Cohort acquisition strategy did not move repurchase behavior — product mix is the lever, not marketing. |
-| **Refund rate by product × country** | Laptops refund 2-3× the company average. MacBook Air × US is the single largest dollar leak ($365K refunded). ThinkPad × CA refunds at 21.3% vs. 12.9% in the US — same product, very different market behavior. |
-| **Revenue split: website vs. mobile app** | Website is 96.8% of lifetime revenue. Mobile generates 17% of orders but only 3% of revenue — structurally a low-AOV channel skewed toward accessories. Trend essentially flat (2.95% → 3.93% over 48 months). Mobile investment thesis must shift toward AOV uplift, not order volume. |
+| **Revenue by category, MoM** | Audio revenue increased by 18% quarter-on-quarter, primarily driven by Q4 promotional activity. |
+| **Return rate by segment** | Return rates among new customers are 2.3× higher than among repeat customers, indicating materially lower product–market fit or expectation alignment in first-time purchases. |
+| **90-day repeat rate by channel** | Repeat behavior varies significantly by acquisition channel: organic search: 31%, paid social: 9%, highlighting substantial differences in customer quality. |
+| **12-month retention by cohort** | Retention remains consistently low and structurally flat, at approximately ~1% in month 1 across all 48 cohorts (Jan 2019–Dec 2022). Changes in acquisition strategy have not translated into improved repurchase behavior, indicating that product mix—not marketing—is the primary lever. |
+| **Refund rate by product × country** | Laptops exhibit refund rates 2–3× above the company average. The MacBook Air (US) represents the largest absolute loss ($365K refunded). The ThinkPad (CA) shows a 21.3% refund rate vs. 12.9% in the US, indicating significant geographic variation in product performance. |
+| **Revenue split: website vs. mobile app** | The website accounts for 96.8% of total revenue, while mobile contributes 17% of orders but only 3% of revenue, reflecting a structurally low average order value (AOV) channel skewed toward accessories. This pattern has remained largely unchanged (2.95% → 3.93% over 48 months). The mobile growth strategy should therefore prioritize AOV expansion rather than order volume. |
 
 ### Retention heatmap
 
