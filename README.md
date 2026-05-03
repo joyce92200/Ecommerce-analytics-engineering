@@ -60,8 +60,6 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
-<<<<<<< HEAD
-=======
 ### Retention pattern
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
@@ -79,9 +77,6 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 ![Channel revenue trend](data/outputs/channel_revenue_trend.png)
 
 *Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
-=======
->>>>>>> 8cc0f9d9c491197db9357062f284cb6d248e4b4d
----
 
 ### Finding 1 — Retention is structurally flat, not strategically broken
 
