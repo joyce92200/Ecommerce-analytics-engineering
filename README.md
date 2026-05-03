@@ -62,9 +62,9 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 
 ### Finding 1 — Retention is structurally flat, not strategically broken
 
-**Result.** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era acquisition peak (Jun 2020 = 2,887 new users).
+**Result:** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era acquisition peak (Jun 2020 = 2,887 new users).
 
-**Implication.** Marketing initiatives aimed at retention will not move the needle. The lever is product mix.
+**Implication:** Marketing initiatives aimed at retention will not move the needle. The lever is product mix.
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -81,9 +81,9 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 
 ### Finding 2 — Laptops drive 2.5–4.3× the company refund rate
 
-**Result.** Refund baseline = **4.97%** of all orders. Laptops dominate the top-10 worst segments — every single one is a laptop. Worst: ThinkPad × CA at **21.3%** (4.3× baseline). Largest dollar leak: MacBook Air × US at **$365,000** refunded (12.4% rate × high volume).
+**Result:** Refund baseline = **4.97%** of all orders. Laptops dominate the top-10 worst segments — every single one is a laptop. Worst: ThinkPad × CA at **21.3%** (4.3× baseline). Largest dollar leak: MacBook Air × US at **$365,000** refunded (12.4% rate × high volume).
 
-**Implication.** Refund-reduction initiatives should target laptops first. Geographic variation (ThinkPad: CA 21.3% vs. US 12.9% = 8.4 pp gap) suggests fulfillment or returns-policy investigation by country.
+**Implication:** Refund-reduction initiatives should target laptops first. Geographic variation (ThinkPad: CA 21.3% vs. US 12.9% = 8.4 pp gap) suggests fulfillment or returns-policy investigation by country.
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -101,9 +101,9 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 
 ### Finding 3 — Mobile is structurally a low-AOV channel
 
-**Result.** Website = **96.8% of lifetime revenue** ($25.0M of $25.9M). Mobile generates **17.1% of orders (18,517 of 108,124) but only 3.2% of revenue ($832K)** — implying mobile AOV is roughly 5× lower than web AOV. The mix has been stable: mobile share moved from 2.95% (2019) to 3.93% (2022) over 48 months.
+**Result:** Website = **96.8% of lifetime revenue** ($25.0M of $25.9M). Mobile generates **17.1% of orders (18,517 of 108,124) but only 3.2% of revenue ($832K)** — implying mobile AOV is roughly 5× lower than web AOV. The mix has been stable: mobile share moved from 2.95% (2019) to 3.93% (2022) over 48 months.
 
-**Implication.** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue.
+**Implication:** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue.
 
 | Cause | Weight | Status |
 |---|---|---|
