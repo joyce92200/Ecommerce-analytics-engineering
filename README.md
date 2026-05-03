@@ -47,8 +47,11 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 | Question | Finding |
 |---|---|
+| **Revenue by category, MoM** | Audio +18% QoQ, driven by Q4 promotions |
+| **Return rate by segment** | New customers return 2.3× more than repeat |
+| **90-day repeat rate by channel** | Organic search: 31%. Paid social: 9%. |
 | **12-month retention by cohort** | Retention is structurally low and stable: ~1% month-1 across all 48 cohorts (Jan 2019 – Dec 2022). Cohort acquisition strategy did not move repurchase behavior — product mix is the lever, not marketing. |
-| **Refund rate by product × country** | Laptops refund 2-3× the company average. MacBook Air × US is the single largest dollar leak ($365K refunded). ThinkPad × CA refunds at 21.3% vs. 12.9% in the US — same product, very different market behavior worth investigating. |
+| **Refund rate by product × country** | Laptops refund 2-3× the company average. MacBook Air × US is the single largest dollar leak ($365K refunded). ThinkPad × CA refunds at 21.3% vs. 12.9% in the US — same product, very different market behavior. |
 | **Revenue split: website vs. mobile app** | Website is 96.8% of lifetime revenue. Mobile generates 17% of orders but only 3% of revenue — structurally a low-AOV channel skewed toward accessories. Trend essentially flat (2.95% → 3.93% over 48 months). Mobile investment thesis must shift toward AOV uplift, not order volume. |
 
 ### Retention heatmap
