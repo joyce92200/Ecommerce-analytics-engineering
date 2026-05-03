@@ -51,9 +51,23 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 | **Refund rate by product × country** | Laptops refund 2-3× the company average. MacBook Air × US is the single largest dollar leak ($365K refunded). ThinkPad × CA refunds at 21.3% vs. 12.9% in the US — same product, very different market behavior worth investigating. |
 | **Revenue split: website vs. mobile app** | Website is 96.8% of lifetime revenue. Mobile generates 17% of orders but only 3% of revenue — structurally a low-AOV channel skewed toward accessories. Trend essentially flat (2.95% → 3.93% over 48 months). Mobile investment thesis must shift toward AOV uplift, not order volume. |
 
-### Retention heatmap
+### Retention pattern
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
+
+*Cohort × month-since-acquisition. Color intensity = % of cohort active. Read vertically: month-1 retention is structurally flat at ~1% across all 48 cohorts.*
+
+### Refund concentration
+
+![Refund top segments](data/outputs/refund_top_segments.png)
+
+*Top 10 product × country refund rates (segments with ≥100 orders). Bar length = rate. Bar color = absolute dollar leak. Laptops dominate; MacBook Air × US combines high rate with high volume.*
+
+### Channel mix over time
+
+![Channel revenue trend](data/outputs/channel_revenue_trend.png)
+
+*Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
 
 ## Data Quality
 
