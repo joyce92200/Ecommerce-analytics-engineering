@@ -23,7 +23,6 @@
 
 <rect x="80" y="216" width="240" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
 <text x="200" y="234" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">stg_orders</text>
-<text x="340" y="234" font-size="12" fill="#444441" dominant-baseline="central">cleaned, typed, validated</text>
 
 <rect x="360" y="216" width="240" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
 <text x="480" y="234" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">stg_country_lookup</text>
@@ -60,28 +59,28 @@
 <line x1="340" y1="440" x2="340" y2="478" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
 <line x1="400" y1="440" x2="510" y2="478" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-<rect x="60" y="480" width="220" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text x="170" y="498" font-size="12" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">mart_cohort_retention</text>
+<rect x="40" y="480" width="200" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="140" y="498" font-size="12" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">mart_cohort_retention</text>
 
-<rect x="290" y="480" width="220" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text x="400" y="498" font-size="12" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">mart_refund_metrics</text>
+<rect x="250" y="480" width="200" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="350" y="498" font-size="12" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">mart_refund_metrics</text>
 
-<rect x="510" y="480" width="120" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text x="570" y="498" font-size="11" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">mart_channel_revenue</text>
+<rect x="460" y="480" width="180" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="550" y="498" font-size="12" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">mart_channel_revenue</text>
 
 <rect x="20" y="538" width="640" height="64" rx="10" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
 <text x="40" y="566" font-size="14" font-weight="500" fill="#854F0B">Findings</text>
 
-<line x1="170" y1="516" x2="170" y2="572" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="400" y1="516" x2="400" y2="572" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-<line x1="570" y1="516" x2="570" y2="572" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="140" y1="516" x2="140" y2="572" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="350" y1="516" x2="350" y2="572" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="550" y1="516" x2="550" y2="572" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-<rect x="60" y="572" width="220" height="20" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-<text x="170" y="582" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">~1% retention baseline</text>
+<rect x="40" y="572" width="200" height="20" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+<text x="140" y="582" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">~1% retention baseline</text>
 
-<rect x="290" y="572" width="220" height="20" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-<text x="400" y="582" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">$365K MBA × US leak</text>
+<rect x="250" y="572" width="200" height="20" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+<text x="350" y="582" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">$365K MBA × US leak</text>
 
-<rect x="510" y="572" width="120" height="20" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-<text x="570" y="582" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">96.8% web</text>
+<rect x="460" y="572" width="180" height="20" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+<text x="550" y="582" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">96.8% web</text>
 </svg>

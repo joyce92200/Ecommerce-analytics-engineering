@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 500" font-family="Helvetica, Arial, sans-serif">
 
-<!-- dim_users -->
 <rect x="40" y="40" width="220" height="120" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
 <rect x="40" y="40" width="220" height="32" rx="6" fill="#1F2937"/>
 <rect x="40" y="60" width="220" height="12" fill="#1F2937"/>
@@ -12,7 +11,6 @@
 <text x="56" y="128" font-size="10" fill="#6B7280">first_purchase_platform · _product</text>
 <text x="56" y="144" font-size="10" fill="#6B7280">loyalty_at_first_purchase</text>
 
-<!-- dim_product -->
 <rect x="40" y="180" width="220" height="80" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
 <rect x="40" y="180" width="220" height="32" rx="6" fill="#1F2937"/>
 <rect x="40" y="200" width="220" height="12" fill="#1F2937"/>
@@ -22,7 +20,6 @@
 <text x="244" y="232" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
 <text x="56" y="248" font-size="10" fill="#6B7280">product_id</text>
 
-<!-- dim_country -->
 <rect x="40" y="280" width="220" height="80" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
 <rect x="40" y="280" width="220" height="32" rx="6" fill="#1F2937"/>
 <rect x="40" y="300" width="220" height="12" fill="#1F2937"/>
@@ -32,7 +29,6 @@
 <text x="244" y="332" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
 <text x="56" y="348" font-size="10" fill="#6B7280">region</text>
 
-<!-- dim_platform -->
 <rect x="40" y="380" width="220" height="80" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
 <rect x="40" y="380" width="220" height="32" rx="6" fill="#1F2937"/>
 <rect x="40" y="400" width="220" height="12" fill="#1F2937"/>
@@ -42,8 +38,7 @@
 <text x="244" y="432" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
 <text x="56" y="448" font-size="10" fill="#6B7280">platform_type</text>
 
-<!-- fct_orders -->
-<rect x="380" y="40" width="260" height="420" rx="6" fill="#FFFFFF" stroke="#1F2937" stroke-width="1"/>
+<rect x="380" y="40" width="260" height="440" rx="6" fill="#FFFFFF" stroke="#1F2937" stroke-width="1"/>
 <rect x="380" y="40" width="260" height="32" rx="6" fill="#0F172A"/>
 <rect x="380" y="60" width="260" height="12" fill="#0F172A"/>
 <text x="396" y="60" font-size="13" font-weight="500" fill="#FFFFFF">fct_orders</text>
@@ -65,15 +60,14 @@
 <text x="624" y="420" font-size="10" fill="#6B7280" text-anchor="end">FK</text>
 
 <line x1="396" y1="440" x2="624" y2="440" stroke="#E5E7EB" stroke-width="0.5"/>
-<text x="396" y="456" font-size="10" fill="#6B7280">+ 7 metric columns (purchase_month, usd_price, is_refunded, ...)</text>
+<text x="396" y="458" font-size="9" fill="#6B7280">+ 7 metric columns:</text>
+<text x="396" y="472" font-size="9" fill="#6B7280">purchase_month, usd_price, is_refunded, ...</text>
 
-<!-- Connectors -->
 <path d="M 260 100 L 320 100 L 320 124 L 380 124" fill="none" stroke="#475569" stroke-width="0.8"/>
 <path d="M 260 220 L 320 220 L 320 240 L 380 240" fill="none" stroke="#475569" stroke-width="0.8"/>
 <path d="M 260 320 L 380 320" fill="none" stroke="#475569" stroke-width="0.8"/>
 <path d="M 260 420 L 380 420" fill="none" stroke="#475569" stroke-width="0.8"/>
 
-<!-- Endpoints -->
 <circle cx="260" cy="100" r="2.5" fill="#475569"/>
 <circle cx="380" cy="124" r="2.5" fill="#475569"/>
 <circle cx="260" cy="220" r="2.5" fill="#475569"/>
