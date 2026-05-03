@@ -167,7 +167,7 @@ Run all cells top-to-bottom (`Kernel → Restart Kernel and Run All Cells`). The
 ## Repository
 
 ```text
-.
+
 ├── data/
 │   ├── raw/                          # Bronze · immutable source (.xlsx not committed)
 │   ├── processed/                    # Silver · staging outputs
