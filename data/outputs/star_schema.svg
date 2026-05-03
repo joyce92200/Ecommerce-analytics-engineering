@@ -1,53 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 480" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 500" font-family="Helvetica, Arial, sans-serif">
 
-<rect x="40" y="60" width="260" height="280" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<!-- dim_users -->
+<rect x="40" y="40" width="220" height="120" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
+<rect x="40" y="40" width="220" height="32" rx="6" fill="#1F2937"/>
+<rect x="40" y="60" width="220" height="12" fill="#1F2937"/>
+<text x="56" y="60" font-size="13" font-weight="500" fill="#FFFFFF">dim_users</text>
+<text x="244" y="60" font-size="10" fill="#9CA3AF" text-anchor="end">87,625 rows</text>
+<text x="56" y="92" font-size="11" font-weight="500" fill="#1F2937">user_id</text>
+<text x="244" y="92" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
+<text x="56" y="112" font-size="10" fill="#6B7280">first_purchase_date · _month · _country</text>
+<text x="56" y="128" font-size="10" fill="#6B7280">first_purchase_platform · _product</text>
+<text x="56" y="144" font-size="10" fill="#6B7280">loyalty_at_first_purchase</text>
 
-<path d="M40 68 Q40 60 48 60 L292 60 Q300 60 300 68 L300 110 L40 110 Z" fill="#185FA5"/>
-<text x="60" y="84" font-size="14" font-weight="500" fill="#FFFFFF" dominant-baseline="central">dim_users</text>
-<text x="60" y="100" font-size="11" fill="#B5D4F4" dominant-baseline="central">one row per user</text>
+<!-- dim_product -->
+<rect x="40" y="180" width="220" height="80" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
+<rect x="40" y="180" width="220" height="32" rx="6" fill="#1F2937"/>
+<rect x="40" y="200" width="220" height="12" fill="#1F2937"/>
+<text x="56" y="200" font-size="13" font-weight="500" fill="#FFFFFF">dim_product</text>
+<text x="244" y="200" font-size="10" fill="#9CA3AF" text-anchor="end">8 rows</text>
+<text x="56" y="232" font-size="11" font-weight="500" fill="#1F2937">product_name</text>
+<text x="244" y="232" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
+<text x="56" y="248" font-size="10" fill="#6B7280">product_id</text>
 
-<text x="60" y="138" font-size="12" font-weight="500" fill="#0C447C" dominant-baseline="central">user_id</text>
-<text x="280" y="138" font-size="12" fill="#0C447C" text-anchor="end" dominant-baseline="central">PK</text>
+<!-- dim_country -->
+<rect x="40" y="280" width="220" height="80" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
+<rect x="40" y="280" width="220" height="32" rx="6" fill="#1F2937"/>
+<rect x="40" y="300" width="220" height="12" fill="#1F2937"/>
+<text x="56" y="300" font-size="13" font-weight="500" fill="#FFFFFF">dim_country</text>
+<text x="244" y="300" font-size="10" fill="#9CA3AF" text-anchor="end">193 rows</text>
+<text x="56" y="332" font-size="11" font-weight="500" fill="#1F2937">country_code</text>
+<text x="244" y="332" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
+<text x="56" y="348" font-size="10" fill="#6B7280">region</text>
 
-<text x="60" y="162" font-size="12" fill="#444441" dominant-baseline="central">first_purchase_date</text>
-<text x="60" y="186" font-size="12" fill="#444441" dominant-baseline="central">first_purchase_month</text>
-<text x="60" y="210" font-size="12" fill="#444441" dominant-baseline="central">first_purchase_country</text>
-<text x="60" y="234" font-size="12" fill="#444441" dominant-baseline="central">first_purchase_platform</text>
-<text x="60" y="258" font-size="12" fill="#444441" dominant-baseline="central">first_purchase_product</text>
-<text x="60" y="282" font-size="12" fill="#444441" dominant-baseline="central">loyalty_at_first_purchase</text>
+<!-- dim_platform -->
+<rect x="40" y="380" width="220" height="80" rx="6" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="0.6"/>
+<rect x="40" y="380" width="220" height="32" rx="6" fill="#1F2937"/>
+<rect x="40" y="400" width="220" height="12" fill="#1F2937"/>
+<text x="56" y="400" font-size="13" font-weight="500" fill="#FFFFFF">dim_platform</text>
+<text x="244" y="400" font-size="10" fill="#9CA3AF" text-anchor="end">2 rows</text>
+<text x="56" y="432" font-size="11" font-weight="500" fill="#1F2937">platform_name</text>
+<text x="244" y="432" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
+<text x="56" y="448" font-size="10" fill="#6B7280">platform_type</text>
 
-<text x="60" y="318" font-size="12" font-style="italic" fill="#5F5E5A" dominant-baseline="central">7 columns · 87,625 rows</text>
+<!-- fct_orders -->
+<rect x="380" y="40" width="260" height="420" rx="6" fill="#FFFFFF" stroke="#1F2937" stroke-width="1"/>
+<rect x="380" y="40" width="260" height="32" rx="6" fill="#0F172A"/>
+<rect x="380" y="60" width="260" height="12" fill="#0F172A"/>
+<text x="396" y="60" font-size="13" font-weight="500" fill="#FFFFFF">fct_orders</text>
+<text x="624" y="60" font-size="10" fill="#94A3B8" text-anchor="end">108,124 rows</text>
 
-<line x1="300" y1="200" x2="380" y2="200" stroke="#185FA5" stroke-width="1.5"/>
-<circle cx="300" cy="200" r="4" fill="#185FA5"/>
-<line x1="372" y1="194" x2="372" y2="206" stroke="#185FA5" stroke-width="1.5"/>
-<polyline points="376,194 380,200 376,206" fill="none" stroke="#185FA5" stroke-width="1.5"/>
-<text x="340" y="186" font-size="12" fill="#0C447C" text-anchor="middle" dominant-baseline="central">places</text>
-<text x="312" y="216" font-size="12" fill="#5F5E5A" text-anchor="middle" dominant-baseline="central">1</text>
-<text x="368" y="216" font-size="12" fill="#5F5E5A" text-anchor="middle" dominant-baseline="central">N</text>
+<text x="396" y="100" font-size="11" font-weight="500" fill="#1F2937">order_id</text>
+<text x="624" y="100" font-size="10" fill="#6B7280" text-anchor="end">PK</text>
 
-<rect x="380" y="60" width="260" height="380" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="396" y="124" font-size="11" font-weight="500" fill="#1F2937">user_id</text>
+<text x="624" y="124" font-size="10" fill="#6B7280" text-anchor="end">FK</text>
 
-<path d="M380 68 Q380 60 388 60 L632 60 Q640 60 640 68 L640 110 L380 110 Z" fill="#534AB7"/>
-<text x="400" y="84" font-size="14" font-weight="500" fill="#FFFFFF" dominant-baseline="central">fct_orders</text>
-<text x="400" y="100" font-size="11" fill="#CECBF6" dominant-baseline="central">one row per order</text>
+<text x="396" y="240" font-size="11" font-weight="500" fill="#1F2937">product_name</text>
+<text x="624" y="240" font-size="10" fill="#6B7280" text-anchor="end">FK</text>
 
-<text x="400" y="138" font-size="12" font-weight="500" fill="#26215C" dominant-baseline="central">order_id</text>
-<text x="620" y="138" font-size="12" fill="#26215C" text-anchor="end" dominant-baseline="central">PK</text>
+<text x="396" y="320" font-size="11" font-weight="500" fill="#1F2937">country_code</text>
+<text x="624" y="320" font-size="10" fill="#6B7280" text-anchor="end">FK</text>
 
-<text x="400" y="162" font-size="12" font-weight="500" fill="#26215C" dominant-baseline="central">user_id</text>
-<text x="620" y="162" font-size="12" fill="#26215C" text-anchor="end" dominant-baseline="central">FK</text>
+<text x="396" y="420" font-size="11" font-weight="500" fill="#1F2937">purchase_platform</text>
+<text x="624" y="420" font-size="10" fill="#6B7280" text-anchor="end">FK</text>
 
-<text x="400" y="186" font-size="12" fill="#444441" dominant-baseline="central">purchase_month</text>
-<text x="400" y="210" font-size="12" fill="#444441" dominant-baseline="central">cohort_month</text>
-<text x="400" y="234" font-size="12" fill="#444441" dominant-baseline="central">months_since_acquisition</text>
-<text x="400" y="258" font-size="12" fill="#444441" dominant-baseline="central">product_name</text>
-<text x="400" y="282" font-size="12" fill="#444441" dominant-baseline="central">country_code</text>
-<text x="400" y="306" font-size="12" fill="#444441" dominant-baseline="central">purchase_platform</text>
-<text x="400" y="330" font-size="12" fill="#444441" dominant-baseline="central">usd_price</text>
-<text x="400" y="354" font-size="12" fill="#444441" dominant-baseline="central">is_refunded</text>
-<text x="400" y="378" font-size="12" fill="#444441" dominant-baseline="central">is_first_purchase</text>
-<text x="400" y="402" font-size="12" fill="#444441" dominant-baseline="central">user_order_seq</text>
+<line x1="396" y1="440" x2="624" y2="440" stroke="#E5E7EB" stroke-width="0.5"/>
+<text x="396" y="456" font-size="10" fill="#6B7280">+ 7 metric columns (purchase_month, usd_price, is_refunded, ...)</text>
 
-<text x="400" y="430" font-size="12" font-style="italic" fill="#5F5E5A" dominant-baseline="central">13 columns · 108,124 rows</text>
+<!-- Connectors -->
+<path d="M 260 100 L 320 100 L 320 124 L 380 124" fill="none" stroke="#475569" stroke-width="0.8"/>
+<path d="M 260 220 L 320 220 L 320 240 L 380 240" fill="none" stroke="#475569" stroke-width="0.8"/>
+<path d="M 260 320 L 380 320" fill="none" stroke="#475569" stroke-width="0.8"/>
+<path d="M 260 420 L 380 420" fill="none" stroke="#475569" stroke-width="0.8"/>
+
+<!-- Endpoints -->
+<circle cx="260" cy="100" r="2.5" fill="#475569"/>
+<circle cx="380" cy="124" r="2.5" fill="#475569"/>
+<circle cx="260" cy="220" r="2.5" fill="#475569"/>
+<circle cx="380" cy="240" r="2.5" fill="#475569"/>
+<circle cx="260" cy="320" r="2.5" fill="#475569"/>
+<circle cx="380" cy="320" r="2.5" fill="#475569"/>
+<circle cx="260" cy="420" r="2.5" fill="#475569"/>
+<circle cx="380" cy="420" r="2.5" fill="#475569"/>
 </svg>
