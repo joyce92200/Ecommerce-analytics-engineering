@@ -60,24 +60,6 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
-### Retention pattern
-
-![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
-
-*Cohort × month-since-acquisition. Color intensity = % of cohort active. Read vertically: month-1 retention is structurally flat at ~1% across all 48 cohorts.*
-
-### Refund concentration
-
-![Refund top segments](data/outputs/refund_top_segments.png)
-
-*Top 10 product × country refund rates (segments with ≥100 orders). Bar length = rate. Bar color = absolute dollar leak. Laptops dominate; MacBook Air × US combines high rate with high volume.*
-
-### Channel mix over time
-
-![Channel revenue trend](data/outputs/channel_revenue_trend.png)
-
-*Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
-
 ### Finding 1 — Retention is structurally flat, not strategically broken
 
 **Result.** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era acquisition peak (Jun 2020 = 2,887 new users).
@@ -93,6 +75,7 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 *Source: `mart_cohort_retention`, `dim_users`, `fct_orders`. Methodology: Appendix A1.*
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
+*Cohort × month-since-acquisition. Color intensity = % of cohort active. Read vertically: month-1 retention is structurally flat at ~1% across all 48 cohorts.*
 
 ---
 
@@ -112,6 +95,7 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 *Source: `mart_refund_metrics`, `fct_orders`, `dim_country`. Methodology: Appendix A2.*
 
 ![Refund top segments](data/outputs/refund_top_segments.png)
+*Top 10 product × country refund rates (segments with ≥100 orders). Bar length = rate. Bar color = absolute dollar leak. Laptops dominate; MacBook Air × US combines high rate with high volume.*
 
 ---
 
@@ -131,6 +115,7 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 *Source: `mart_channel_revenue`, `fct_orders`, `dim_platform`. Methodology: Appendix A3.*
 
 ![Channel revenue trend](data/outputs/channel_revenue_trend.png)
+*Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
 
 ---
 
