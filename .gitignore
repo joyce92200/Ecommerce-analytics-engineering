@@ -224,6 +224,8 @@ data/processed/*
 !data/processed/.gitkeep
 data/outputs/*
 !data/outputs/.gitkeep
+!data/outputs/*.png
+!data/outputs/*.svg
 .env
 .duckdb
 *.duckdb
