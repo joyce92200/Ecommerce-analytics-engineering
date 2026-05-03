@@ -75,3 +75,18 @@ WHERE months_since_acquisition = 0 AND retention_pct <> 100.00;
 SELECT COUNT(*) AS failures
 FROM mart_cohort_retention
 WHERE retention_pct < 0 OR retention_pct > 100;
+
+-- ===== mart_refund_metrics ==================================================
+
+-- not_null: mart_refund_metrics.product_name
+SELECT COUNT(*) AS failures FROM mart_refund_metrics WHERE product_name IS NULL;
+
+-- range: refund_rate_pct between 0 and 100
+SELECT COUNT(*) AS failures
+FROM mart_refund_metrics
+WHERE refund_rate_pct < 0 OR refund_rate_pct > 100;
+
+-- consistency: refunded + net = gross (within rounding tolerance)
+SELECT COUNT(*) AS failures
+FROM mart_refund_metrics
+WHERE ABS(refunded_revenue_usd + net_revenue_usd - gross_revenue_usd) > 0.01;
