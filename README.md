@@ -60,7 +60,6 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
-<<<<<<< HEAD
 ### Retention pattern
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
