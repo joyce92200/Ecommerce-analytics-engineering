@@ -1,7 +1,8 @@
 # OpenBuild Analytics Engineering
 
-End-to-end analytics layer for a mid-size electronics retailer.
-Medallion architecture · star schema · 28 tested transformations.
+OpenBuild — a global e-commerce retailer — grew 4× through 2020 and plateaued thereafter. Four years of transactions (108K orders, 87K users, 193 countries, 2019–2022) reveal three structural levers worth ~$2.1M, or 8% of the lifetime revenue base.
+
+Three findings, four causes weighted by evidence strength, all auditable from source: medallion architecture, star schema, 28 SQL data quality tests.
 
 [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1–A3
 
