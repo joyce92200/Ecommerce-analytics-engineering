@@ -12,9 +12,9 @@ Medallion architecture · star schema · 28 tested transformations.
 | | |
 |---|---|
 | **Scope** | 108,124 orders · 87,625 users · 193 countries · Jan 2019 – Dec 2022 |
-| **Models** | 2 silver · 4 dimensions · 1 fact · 3 analytical marts |
-| **Tests** | 28 assertions across schema, uniqueness, referential integrity, and derived-column invariants — all passing |
-| **Findings** | Retention 0.8%–1.4% month-1 across 48 cohorts · refund baseline 4.97% (laptops 12-21%) · website 96.8% of revenue |
+| **Models** | 2 silver · 4 dimensions · 1 fact · 4 analytical marts |
+| **Tests** | 32 assertions across schema, uniqueness, referential integrity, and derived-column invariants — all passing |
+| **Findings** | Retention 0.8%–1.4% month-1 across 48 cohorts (loyalty members retain 3.6× worse) · refund baseline 4.97% (laptops 12-21%) · website 96.8% of revenue |
 
 ---
 
@@ -60,8 +60,6 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
-<<<<<<< HEAD
-=======
 ### Retention pattern
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
@@ -79,26 +77,32 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 ![Channel revenue trend](data/outputs/channel_revenue_trend.png)
 
 *Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
-=======
->>>>>>> 8cc0f9d9c491197db9357062f284cb6d248e4b4d
 ---
 
-### Finding 1 — Retention is structurally flat, not strategically broken
+### Finding 1 — Retention is structurally flat AND the loyalty program is making it worse
 
-**Result.** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era acquisition peak (Jun 2020 = 2,887 new users).
+**Result.** Two layered findings, same dataset:
 
-**Implication.** Marketing initiatives aimed at retention will not move the needle. The lever is product mix.
+**1a. Cohort timing doesn't matter.** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era peak (Jun 2020 = 2,887 new users). Acquisition strategy did not move repurchase behavior.
+
+**1b. Loyalty membership at acquisition correlates with 3.6× *worse* retention.** Loyalty members retain at **0.45%** in month 1 vs. **1.63%** for non-loyalty members (averaged across all 48 cohorts). The deficit is front-loaded — it converges to parity by month 9. The gap emerged in 2020: in 2019 loyalty cohorts retained nearly on par (1.35% vs. 1.55%); from 2020 onward, the deficit is 4–6×. Mechanism: loyalty disproportionately recruits **Airpods buyers (58.3% of loyalty first-purchases vs. 36.6% non-loyalty) and underweights replenishables (5.7% Charging Cable Pack vs. 34.0% non-loyalty)**. AOVs are equal ($239 vs. $257), so this is *not* a discount-driven selection effect — it is a product-mix recruitment effect.
+
+**Implication.** Marketing won't fix retention; product mix is the lever. The loyalty program is currently amplifying the catalog's structural retention problem by acquiring users into one-and-done categories. Recruitment mechanics need to steer loyalty signups toward replenishable categories.
 
 | Cause | Weight | Status |
 |---|---|---|
 | Durable goods naturally have low repurchase frequency (1.23 orders/user across 4 years) | High | `tested` |
 | Catalog skews toward one-time purchases vs. replenishables (only 1 of 8 products is replenishable) | High | `tested` |
+| Loyalty program scaled from 11.6% (2019) to 55.8% (2022) of acquisitions, recruiting predominantly into one-and-done categories | High | `tested` |
 | Limited cross-sell mechanics in checkout | Medium | `hypothesis` |
 
-*Source: `mart_cohort_retention`, `dim_users`, `fct_orders`. Methodology: Appendix A1.*
+*Sources: `mart_cohort_retention`, `mart_loyalty_retention`, `dim_users`, `fct_orders`. Methodology: Appendix A1, A1b.*
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
+*Cohort × month-since-acquisition. Color intensity = % of cohort active. Read vertically: month-1 retention is structurally flat at ~1% across all 48 cohorts.*
 
+![Loyalty retention analysis](data/outputs/loyalty_retention_analysis.png)
+*Left: averaged retention curves — loyalty trails 3.6× at month 1, converges by month 9. Right: month-1 retention by cohort year — the gap was small in 2019 and emerged sharply in 2020 alongside aggressive program scaling.*
 ---
 
 ### Finding 2 — Laptops drive 2.5–4.3× the company refund rate
