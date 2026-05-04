@@ -1,7 +1,8 @@
 # OpenBuild Analytics Engineering
 
-End-to-end analytics layer for a mid-size electronics retailer.
-Medallion architecture · star schema · 28 tested transformations.
+OpenBuild — a global e-commerce retailer — grew 4× through 2020 and plateaued thereafter. Four years of transactions (108K orders, 87K users, 193 countries, 2019–2022) reveal three structural levers worth ~$2.1M, or 8% of the lifetime revenue base.
+
+Three findings, four causes weighted by evidence strength, all auditable from source: medallion architecture, star schema, 28 SQL data quality tests.
 
 [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1–A3
 
@@ -60,6 +61,7 @@ Grain: one row per order. The same model answers cohort, refund, and channel que
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
+<<<<<<< HEAD
 ### Retention pattern
 
 ![Cohort retention heatmap](data/outputs/cohort_retention_heatmap.png)
@@ -88,6 +90,13 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 **1b. Loyalty membership at acquisition correlates with 3.6× *worse* retention.** Loyalty members retain at **0.45%** in month 1 vs. **1.63%** for non-loyalty members (averaged across all 48 cohorts). The deficit is front-loaded — it converges to parity by month 9. The gap emerged in 2020: in 2019 loyalty cohorts retained nearly on par (1.35% vs. 1.55%); from 2020 onward, the deficit is 4–6×. Mechanism: loyalty disproportionately recruits **Airpods buyers (58.3% of loyalty first-purchases vs. 36.6% non-loyalty) and underweights replenishables (5.7% Charging Cable Pack vs. 34.0% non-loyalty)**. AOVs are equal ($239 vs. $257), so this is *not* a discount-driven selection effect — it is a product-mix recruitment effect.
 
 **Implication.** Marketing won't fix retention; product mix is the lever. The loyalty program is currently amplifying the catalog's structural retention problem by acquiring users into one-and-done categories. Recruitment mechanics need to steer loyalty signups toward replenishable categories.
+=======
+### Finding 1 — Retention is structurally flat, not strategically broken
+
+**Result:** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era acquisition peak (Jun 2020 = 2,887 new users).
+
+**Implication:** Marketing initiatives aimed at retention will not move the needle. The lever is product mix.
+>>>>>>> f27a8793337c746cac78e7b926d52959e6f3867e
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -107,9 +116,9 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 
 ### Finding 2 — Laptops drive 2.5–4.3× the company refund rate
 
-**Result.** Refund baseline = **4.97%** of all orders. Laptops dominate the top-10 worst segments — every single one is a laptop. Worst: ThinkPad × CA at **21.3%** (4.3× baseline). Largest dollar leak: MacBook Air × US at **$365,000** refunded (12.4% rate × high volume).
+**Result:** Refund baseline = **4.97%** of all orders. Laptops dominate the top-10 worst segments — every single one is a laptop. Worst: ThinkPad × CA at **21.3%** (4.3× baseline). Largest dollar leak: MacBook Air × US at **$365,000** refunded (12.4% rate × high volume).
 
-**Implication.** Refund-reduction initiatives should target laptops first. Geographic variation (ThinkPad: CA 21.3% vs. US 12.9% = 8.4 pp gap) suggests fulfillment or returns-policy investigation by country.
+**Implication:** Refund-reduction initiatives should target laptops first. Geographic variation (ThinkPad: CA 21.3% vs. US 12.9% = 8.4 pp gap) suggests fulfillment or returns-policy investigation by country.
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -121,14 +130,15 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 *Source: `mart_refund_metrics`, `fct_orders`, `dim_country`. Methodology: Appendix A2.*
 
 ![Refund top segments](data/outputs/refund_top_segments.png)
+*Top 10 product × country refund rates (segments with ≥100 orders). Bar length = rate. Bar color = absolute dollar leak. Laptops dominate; MacBook Air × US combines high rate with high volume.*
 
 ---
 
 ### Finding 3 — Mobile is structurally a low-AOV channel
 
-**Result.** Website = **96.8% of lifetime revenue** ($25.0M of $25.9M). Mobile generates **17.1% of orders (18,517 of 108,124) but only 3.2% of revenue ($832K)** — implying mobile AOV is roughly 5× lower than web AOV. The mix has been stable: mobile share moved from 2.95% (2019) to 3.93% (2022) over 48 months.
+**Result:** Website = **96.8% of lifetime revenue** ($25.0M of $25.9M). Mobile generates **17.1% of orders (18,517 of 108,124) but only 3.2% of revenue ($832K)** — implying mobile AOV is roughly 5× lower than web AOV. The mix has been stable: mobile share moved from 2.95% (2019) to 3.93% (2022) over 48 months.
 
-**Implication.** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue.
+**Implication:** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue.
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -140,6 +150,7 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 *Source: `mart_channel_revenue`, `fct_orders`, `dim_platform`. Methodology: Appendix A3.*
 
 ![Channel revenue trend](data/outputs/channel_revenue_trend.png)
+*Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
 
 ---
 
@@ -191,7 +202,7 @@ Run all cells top-to-bottom (`Kernel → Restart Kernel and Run All Cells`). The
 ## Repository
 
 ```text
-.
+
 ├── data/
 │   ├── raw/                          # Bronze · immutable source (.xlsx not committed)
 │   ├── processed/                    # Silver · staging outputs
