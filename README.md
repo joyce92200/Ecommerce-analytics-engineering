@@ -227,6 +227,15 @@ Run all cells top-to-bottom (`Kernel → Restart Kernel and Run All Cells`). The
 └── tests/
     └── test_models.sql               # 28 data-quality assertions
 ```
+## Reflections
+
+A few things I'd do differently or extend with more time and data:
+
+**What this dataset cannot tell us.** Marketing-channel attribution is essentially missing (the upstream column is >99% null), so the "marketing won't fix retention" claim rests on cohort-timing evidence rather than direct channel comparison. The 2020 loyalty structural break is observable but not diagnosable from this data alone — distinguishing among "program eligibility changed", "checkout default added loyalty signup", or "marketing campaign shifted the recruitment mix" would require operational data not in the source.
+
+**What I'd build next.** A fulfillment-SLA × refund-rate analysis to test whether laptop refunds correlate with shipping delays — if true, the "spec mismatch" hypothesis weakens and the lever shifts from product description to operations. A loyalty signup-channel breakdown would explain *why* recruitment shifted toward Airpods buyers in 2020.
+
+**What I learned.** The most valuable findings came from tests catching what I would have missed — the duplicate primary key in `country_lookup_raw`, the EU/AP region codes used as country codes. Tests aren't bureaucratic overhead; they are the analytical instinct that surfaces real problems. The loyalty finding only emerged because I bothered to anti-confounder the analysis (snapshotting loyalty status at acquisition rather than current state) — without that, I'd have measured "loyalty members retain better" and shipped a wrong conclusion.
 
 ---
 
