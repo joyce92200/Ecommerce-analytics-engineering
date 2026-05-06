@@ -129,7 +129,35 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 *Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
 
 ---
+## Recommendations
 
+Specific actions, organized by finding. Each is grounded in a tested or partially-tested cause from above.
+
+### From Finding 1 — Retention & Loyalty
+
+**1. Restructure loyalty signup mechanics to favor replenishable categories.** Today, loyalty disproportionately recruits Airpods buyers (58.3%). Replace generic signup offers with category-specific ones — *e.g.*, "Join loyalty, get a free Charging Cable Pack." This addresses the recruitment-mix root cause directly without changing the program's points or discount structure.
+
+**2. Run a 60-day test withholding loyalty enrollment from one-and-done categories.** Pause auto-enroll on Airpods purchases for two months and measure month-1 retention of the affected cohort. If retention rises toward the 1.63% non-loyalty baseline, the recruitment-mix hypothesis is confirmed; the program then needs a redesign, not just amplification.
+
+**3. Stop using "loyalty members AOV" as a program success metric.** AOV at first purchase is equal across segments ($239 vs. $257) — the program isn't driving spend, it's selecting buyers. Replace this KPI with **month-12 retention rate by signup cohort**, which directly measures whether members come back.
+
+### From Finding 2 — Refunds
+
+**1. Investigate ThinkPad Canada specifically.** 21.3% refund rate vs. 12.9% in the US for the same product is an 8.4 pp gap that's almost certainly operational, not product-quality. Audit fulfillment partners, returns policy, and localization (pricing, language, expected specs) for the Canadian market.
+
+**2. Prioritize laptop refund reduction by dollar leak, not rate.** MacBook Air × US has a moderate 12.4% rate but accounts for $365K refunded — more than any other segment. A 2 pp reduction here is worth more than eliminating the worst-rate segment entirely.
+
+**3. Add a fulfillment-SLA × refund correlation analysis to the next iteration.** If laptops with longer shipping times have higher refund rates, the lever shifts from product-listing accuracy to operations. This requires shipment-tracking data not in the current dataset.
+
+### From Finding 3 — Channel Mix
+
+**1. Stop measuring mobile success in order volume.** With AOV ~5× lower than web, doubling mobile orders only adds ~3 pp to total revenue. Reframe mobile KPIs around AOV growth and high-value category attach rate.
+
+**2. Investigate why mobile users skew toward accessories.** Hypothesis: high-AOV product pages (laptops, monitors) are not mobile-optimized. Run a checkout-funnel analysis comparing mobile vs. web conversion at each stage, segmented by product category.
+
+**3. Defer mobile growth investments until AOV mix shifts.** The 4-year mobile share trend (2.95% → 3.93%) is real but trivially small. Before allocating engineering resources to mobile UX, test whether the AOV gap can be closed at all.
+
+---
 ## Data Quality
 
 Tests run on every model build. **32 assertions** all passing.
