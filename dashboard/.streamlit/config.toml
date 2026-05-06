@@ -1,0 +1,19 @@
+[theme]
+# Primary brand color used for buttons, sliders, links — matches the README's blue palette
+primaryColor = "#185FA5"
+
+# Page background
+backgroundColor = "#FFFFFF"
+
+# Sidebar background (subtle off-white for visual separation)
+secondaryBackgroundColor = "#F8F9FA"
+
+# Body text color
+textColor = "#1F2937"
+
+# Font for the entire app
+font = "sans serif"
+
+[server]
+# Disable automatic browser tab opening on every reload (you've already got it open)
+headless = false
