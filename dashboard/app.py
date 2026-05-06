@@ -48,7 +48,20 @@ def load_marts():
         "first_purchase": pd.read_csv(DATA_DIR / "first_purchase_summary.csv"),
     }
 
-marts = load_marts()
+# Surface any data-loading errors to the user instead of silently crashing the app
+try:
+    marts = load_marts()
+except Exception as e:
+    st.error("Failed to load data files.")
+    st.code(f"DATA_DIR resolved to: {DATA_DIR}")
+    st.code(f"Error: {type(e).__name__}: {e}")
+    import os
+    if DATA_DIR.exists():
+        st.code(f"Files found in DATA_DIR: {os.listdir(DATA_DIR)}")
+    else:
+        st.code(f"DATA_DIR does not exist. Working dir: {os.getcwd()}")
+        st.code(f"Files in working dir: {os.listdir('.')}")
+    st.stop()
 
 # ---------- Sidebar ----------
 with st.sidebar:
