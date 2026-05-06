@@ -3,7 +3,7 @@
 End-to-end analytics layer for a mid-size electronics retailer.
 Medallion architecture · star schema · 32 tested transformations.
 
-[**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3
+[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3
 
 ---
 
