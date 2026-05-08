@@ -43,7 +43,7 @@ The project transformed raw transactional data into a governed analytical layer 
 
 ---
 
-# Dataset Overview
+## Dataset Overview
 
 | Metric | Value |
 |---|---|
@@ -74,9 +74,7 @@ Raw is never edited. Silver is rebuilt on every run. Gold is what stakeholders c
 
 ---
 
-## Dimensional Modeling
-
-## Star Schema
+## Dimensional Modeling - Star Schema
 
 ### Fact Table
 
@@ -110,7 +108,8 @@ without duplicating transformation logic.
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
 ---
-# Business Findings
+
+## Business Findings
 
 ### Finding 1 — Loyalty program cohorts retain materially worse than non-loyalty cohorts
 
