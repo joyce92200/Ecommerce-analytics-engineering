@@ -101,9 +101,7 @@ without duplicating transformation logic.
 
 ![Star schema](data/outputs/star_schema.svg)
 
----
-
-## The Findings
+### Validations
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
