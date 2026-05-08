@@ -1,7 +1,8 @@
 # OpenBuild Analytics Engineering
 
-End-to-end analytics layer for a mid-size electronics retailer.
-Medallion architecture · star schema · 32 tested transformations.
+End-to-end analytics engineering project for a mid-size global electronics retailer.
+
+Built a tested analytics layer using medallion architecture, dimensional modeling, SQL transformation pipelines, and business-facing analytical marts to support executive decision-making across retention, refunds, and channel strategy.
 
 [**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3
 
@@ -18,13 +19,44 @@ Medallion architecture · star schema · 32 tested transformations.
 
 ---
 
-## The Problem
+## Executive Summary
 
-OpenBuild's leadership needs reliable answers to three questions:
-which cohorts come back, where refunds erode margin,
-and which platform deserves the next investment dollar.
-Raw transactional data — 108K orders across 87K users, four years, 193 countries —
-cannot answer them directly. The gap is a modeled, tested data layer.
+OpenBuild operates across 193 countries with more than 108K orders collected between 2019–2022. Leadership lacked a reliable analytical layer capable of answering three operational questions consistently:
+
+- Which customer cohorts return?
+- Which refund segments erode margin?
+- Which sales channels justify future investment?
+
+To address this, I designed and implemented:
+- a 3-layer medallion architecture
+- a star-schema dimensional model
+- 32 automated data-quality tests
+- reproducible SQL and notebook workflows
+
+The resulting analytics layer produced three primary findings:
+
+- Retention weakness was structural across all cohorts and driven primarily by product mix rather than acquisition timing
+- Refund exposure was concentrated in high-AOV laptop categories, particularly specific product-country combinations
+- Website remained the dominant revenue channel, while mobile functioned primarily as a low-AOV support and onboarding channel
+
+The project transformed raw transactional data into a governed analytical layer suitable for operational and executive reporting.
+
+---
+
+# Dataset Overview
+
+| Metric | Value |
+|---|---|
+| Orders | 108,124 |
+| Users | 87,625 |
+| Countries | 193 |
+| Time range | Jan 2019 – Dec 2022 |
+| Fact tables | 1 |
+| Dimension tables | 4 |
+| Analytical marts | 4 |
+| Data-quality assertions | 32 passing tests |
+
+---
 
 ## The Architecture
 
@@ -40,45 +72,60 @@ Raw is never edited. Silver is rebuilt on every run. Gold is what stakeholders c
 
 ![Architecture](data/outputs/architecture_diagram.svg)
 
-## The Model
+---
 
-Star schema. One fact, four dimensions, four derived marts.
-Grain: one row per order. The same model answers cohort, refund, channel, and loyalty questions without rework.
+## Dimensional Modeling
 
-- `dim_users` — one row per user; attributes locked at acquisition time (87,625 rows)
-- `dim_product` — one row per product (8 rows)
-- `dim_country` — one row per country with regional rollup (193 rows)
-- `dim_platform` — one row per purchase platform with category rollup (2 rows)
-- `fct_orders` — one row per order; foreign keys to all four dimensions; cohort enrichment computed once (108,124 rows)
-- `mart_cohort_retention` — monthly retention matrix (cohort × months_since_acquisition)
-- `mart_loyalty_retention` — retention split by loyalty membership at acquisition
-- `mart_refund_metrics` — refund rate and revenue leak by product × country
-- `mart_channel_revenue` — monthly orders and revenue by purchase platform
+## Star Schema
+
+### Fact Table
+
+| Table | Grain |
+|---|---|
+| `fct_orders` | One row per order |
+
+### Dimension Tables
+
+| Dimension | Description |
+|---|---|
+| `dim_users` | Customer acquisition attributes |
+| `dim_product` | Product attributes |
+| `dim_country` | Country and regional hierarchy |
+| `dim_platform` | Purchase-channel hierarchy |
+
+The same model supports:
+- retention analysis
+- refund analysis
+- platform analysis
+- loyalty segmentation
+
+without duplicating transformation logic.
 
 ![Star schema](data/outputs/star_schema.svg)
+
+---
 
 ## The Findings
 
 Three executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
 ---
+# Business Findings
 
-### Finding 1 — Retention is structurally flat AND the loyalty program is making it worse
+### Finding 1 — Loyalty program cohorts retain materially worse than non-loyalty cohorts
 
-**Result.** Two layered findings, same dataset:
+**Result.** Month-1 retention remained structurally low across all 48 acquisition cohorts, ranging between **0.8%–1.4%**. Loyalty cohorts retained materially worse than non-loyalty cohorts, with the gap widening after 2020 program expansion.
 
-**1a. Cohort timing doesn't matter.** Month-1 retention sits between **0.8% and 1.4% across all 48 cohorts** (Jan 2019 – Dec 2022). No cohort breaks the band — including those acquired during the COVID-era peak (Jun 2020 = 2,887 new users). Acquisition strategy did not move repurchase behavior.
+Loyalty acquisition skewed heavily toward one-time-purchase products, particularly AirPods, while replenishable categories remained underrepresented.
 
-**1b. Loyalty membership at acquisition correlates with 3.6× *worse* retention.** Loyalty members retain at **0.45%** in month 1 vs. **1.63%** for non-loyalty members (averaged across all 48 cohorts). The deficit is front-loaded — it converges to parity by month 9. The gap emerged in 2020: in 2019 loyalty cohorts retained nearly on par (1.35% vs. 1.55%); from 2020 onward, the deficit is 4–6×. Mechanism: loyalty disproportionately recruits **Airpods buyers (58.3% of loyalty first-purchases vs. 36.6% non-loyalty) and underweights replenishables (5.7% Charging Cable Pack vs. 34.0% non-loyalty)**. AOVs are equal ($239 vs. $257), so this is *not* a discount-driven selection effect — it is a product-mix recruitment effect.
-
-**Implication.** Marketing won't fix retention; product mix is the lever. The loyalty program is currently amplifying the catalog's structural retention problem by acquiring users into one-and-done categories. Recruitment mechanics need to steer loyalty signups toward replenishable categories.
+**Implication.** Cohort timing alone does not explain retention outcomes. The evidence suggests product mix is a stronger driver of repeat-purchase behavior than acquisition period effects.
 
 | Cause | Weight | Status |
 |---|---|---|
-| Durable goods naturally have low repurchase frequency (1.23 orders/user across 4 years) | High | `tested` |
-| Catalog skews toward one-time purchases vs. replenishables (only 1 of 8 products is replenishable) | High | `tested` |
-| Loyalty program scaled from 11.6% (2019) to 55.8% (2022) of acquisitions, recruiting predominantly into one-and-done categories | High | `tested` |
-| Limited cross-sell mechanics in checkout | Medium | `hypothesis` |
+| Durable-goods catalog suppresses repurchase frequency | High | `tested` |
+| Loyalty acquisition concentrated in one-time-purchase categories | High | `tested` |
+| Limited replenishable-product penetration | High | `tested` |
+| Checkout cross-sell limitations | Medium | `hypothesis` |
 
 *Sources: `mart_cohort_retention`, `mart_loyalty_retention`, `dim_users`, `fct_orders`. Methodology: Appendix A1, A1b.*
 
@@ -90,18 +137,23 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 
 ---
 
-### Finding 2 — Laptops drive 2.5–4.3× the company refund rate
+### Finding 2 — Laptop categories dominate refund leakage
 
-**Result.** Refund baseline = **4.97%** of all orders. Laptops dominate the top-10 worst segments — every single one is a laptop. Worst: ThinkPad × CA at **21.3%** (4.3× baseline). Largest dollar leak: MacBook Air × US at **$365,000** refunded (12.4% rate × high volume).
+**Result.**
+- Overall refund baseline: **4.97%**
+- Worst segment: **ThinkPad × Canada = 21.3%**
+- Largest dollar leakage: **MacBook Air × US = $365K refunded revenue**
 
-**Implication.** Refund-reduction initiatives should target laptops first. Geographic variation (ThinkPad: CA 21.3% vs. US 12.9% = 8.4 pp gap) suggests fulfillment or returns-policy investigation by country.
+Every top-10 refund segment belonged to laptop categories.
+
+**Implication.** Refund-reduction initiatives should prioritize high-AOV laptop segments before lower-value accessory categories.
 
 | Cause | Weight | Status |
 |---|---|---|
-| High-AOV products carry higher absolute return risk | High | `tested` |
-| Spec / expectation mismatch in laptops vs. accessories | High | `partially tested` |
-| Country-level returns policy or fulfillment variance | Medium | `partially tested` |
-| Localization issues (pricing, positioning) | Medium | `hypothesis` |
+| High-AOV products carry greater refund exposure | High | `tested` |
+| Product-specification mismatch | High | `partially tested` |
+| Country-level fulfillment variation | Medium | `partially tested` |
+| Localization and positioning differences | Medium | `hypothesis` |
 
 *Source: `mart_refund_metrics`, `fct_orders`, `dim_country`. Methodology: Appendix A2.*
 
@@ -112,23 +164,51 @@ Three executive-grade findings backed by the SQL marts above. Each cause is labe
 
 ### Finding 3 — Mobile is structurally a low-AOV channel
 
-**Result.** Website = **96.8% of lifetime revenue** ($25.0M of $25.9M). Mobile generates **17.1% of orders (18,517 of 108,124) but only 3.2% of revenue ($832K)** — implying mobile AOV is roughly 5× lower than web AOV. The mix has been stable: mobile share moved from 2.95% (2019) to 3.93% (2022) over 48 months.
+**Result.**
+- Website generated **96.8%** of total revenue
+- Mobile generated **17.1%** of orders but only **3.2%** of revenue
+- Mobile AOV was approximately **5× lower** than website AOV
 
-**Implication.** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue.
+The mobile share improved modestly over four years but remained operationally small relative to revenue contribution.
+
+**Implication.** Mobile investment strategy should prioritize AOV improvement rather than order-volume growth.
 
 | Cause | Weight | Status |
 |---|---|---|
-| Mobile users skew toward accessory purchases | High | `tested` |
-| Catalog product mix is desktop-shaped (laptops, monitors) | High | `tested` |
-| Mobile UX friction at high-value checkout | Medium | `hypothesis` |
-| Desktop preference for large / considered purchases | Low–Medium | `hypothesis` |
-
+| Mobile purchases skew toward accessories | High | `tested` |
+| Catalog structure favors desktop purchasing | High | `tested` |
+| Mobile checkout friction for high-value purchases | Medium | `hypothesis` |
+| Desktop preference for considered purchases | Medium | `hypothesis` |
 *Source: `mart_channel_revenue`, `fct_orders`, `dim_platform`. Methodology: Appendix A3.*
 
 ![Channel revenue trend](data/outputs/channel_revenue_trend.png)
 *Monthly net revenue, website (blue) vs. mobile app (amber). The orange band's flat width across 4 years is the "structurally low-AOV" finding visualized.*
 
 ---
+
+### Finding 4 — Mobile acquisition does not translate into mobile purchasing
+
+**Result.** Account-creation method only partially predicts purchase behavior. Desktop-created users purchase through the website **89.1%** of the time. Mobile-created users remain split between channels, with only **46.2%** purchasing through the mobile app and **53.8%** still purchasing through the website.
+
+| Account creation method | Website share | Mobile-app share |
+|---|---:|---:|
+| Desktop | 89.1% | 10.9% |
+| Mobile | 53.8% | 46.2% |
+| Tablet | 78.0% | 22.0% |
+
+The mobile-app share improved after 2020 but never became dominant. Even mobile-origin users continued migrating to web checkout.
+
+**Implication.** Acquisition channel is weaker than transaction behavior. The mobile app appears effective for onboarding and browsing, but high-value purchases continue to consolidate on web. This reinforces the earlier finding that mobile functions as a structurally low-AOV channel rather than a primary revenue driver.
+
+| Cause | Weight | Status |
+|---|---|---|
+| High-AOV purchases migrate toward desktop checkout | High | `partially tested` |
+| Mobile users skew toward lower-value accessory purchases | High | `tested` |
+| Product discovery occurs on mobile, conversion on web | Medium | `hypothesis` |
+| Mobile checkout friction for considered purchases | Medium | `hypothesis` |
+
+---
+
 ## Recommendations
 
 Specific actions, organized by finding. Each is grounded in a tested or partially-tested cause from above.
@@ -157,91 +237,149 @@ Specific actions, organized by finding. Each is grounded in a tested or partiall
 
 **3. Defer mobile growth investments until AOV mix shifts.** The 4-year mobile share trend (2.95% → 3.93%) is real but trivially small. Before allocating engineering resources to mobile UX, test whether the AOV gap can be closed at all.
 
+### From Finding 4 - Account Creation to Purchase 
+**1. Measure mobile performance using value-based metrics rather than acquisition metrics.**  
+Mobile account creation does not reliably translate into mobile purchasing behavior. Performance tracking should prioritize mobile AOV, high-value conversion rate, and revenue contribution rather than app signups or order volume alone.
+
+**2. Investigate cross-device checkout migration.**  
+More than half of mobile-created users ultimately purchase through the website. The next analytical step should map user journeys between account creation and checkout to identify where high-value purchases transition from mobile to desktop.
+
+**3. Prioritize mobile optimization selectively by product category.**  
+The evidence suggests customers are comfortable using mobile for lower-value accessory purchases but shift toward web for considered purchases. Product categories with high desktop migration should be prioritized for mobile UX and checkout testing.
+
+**4. Reframe the role of the mobile app within the commercial ecosystem.**  
+Current behavior indicates the mobile app functions more effectively as a discovery and onboarding channel than as a primary revenue channel. Investment decisions should reflect this operational role until mobile conversion quality materially improves.
+
 ---
+
 ## Data Quality
 
-Tests run on every model build. **32 assertions** all passing.
+### Test Coverage
 
-| Test type | Examples | Coverage |
-|---|---|---|
-| `not_null` | `dim_users.user_id`, `fct_orders.order_id`, `purchase_ts` | Schema integrity |
-| `unique` | All four dimension primary keys; `fct_orders.order_id` | Primary key contracts |
-| `relationships` | All four FKs from `fct_orders` to dimension tables | Referential integrity |
-| `accepted_values` | `purchase_platform ∈ {website, mobile app}`; `loyalty_status ∈ {0, 1}` | Domain constraints |
-| `range` | `retention_pct ∈ [0, 100]` | Bounds checking |
-| `invariants` | `refunded_revenue + net_revenue = gross_revenue`; monthly platform shares sum to 100; cohort month-0 retention = 100% | Derivation correctness |
+A total of **32 assertions** validate the analytical layer.
 
-### Quality Decisions (audit trail)
+| Test Type | Validation |
+|---|---|
+| `not_null` | Required business keys |
+| `unique` | Primary-key integrity |
+| `relationships` | Foreign-key consistency |
+| `accepted_values` | Domain validation |
+| `range` | Numerical bounds |
+| `invariants` | Derived-metric correctness |
 
-- **3 orders (0.003%)** with unparseable purchase timestamps excluded from cohort assignment
-- **2 columns** (`MARKETING_CHANNEL_cleaned`, `ACCOUNT_CREATION_METHOD_cleaned`) entirely null; excluded from model
-- **`country_lookup_raw` had a duplicate primary key** for `US` (rows with regions `'x'` and `'North America'`); resolved at silver layer with deterministic deduplication, mapped to canonical `AMER` region
-- **18 orders use `EU` or `AP` as country codes** (region-bloc identifiers entered as country codes — a contract violation in the source); preserved as `Unclassified` rows in `dim_country` to maintain referential integrity without losing the orders
-- **26 source countries had NULL or junk regions** (`'x'`, NULL, etc.); mapped to `Unclassified` rather than dropped
-- **4 orders roll up under NULL `country_code`** (missing geolocation); retained as a distinct segment so refund leakage from unknown-country orders remains visible
-- **Raw `_RAW` columns retained** in bronze for audit lineage; gold uses cleaned versions only
-- **Cohorts after Dec 2021** are right-censored; 12-month retention reported only for fully observable cohorts
-- **Loyalty status is snapshotted at first purchase**, not at current state, to avoid reverse causality (users who retained → joined loyalty later → would otherwise look like good retainers)
+### Examples
+- `refund_revenue + net_revenue = gross_revenue`
+- Cohort month-0 retention must equal 100%
+- Platform shares must sum to 100%
+
+---
+
+## Key Data Quality Decisions
+
+| Issue | Resolution |
+|---|---|
+| Duplicate `US` region mappings | Deterministic silver-layer deduplication |
+| Invalid country codes (`EU`, `AP`) | Preserved as `Unclassified` |
+| Null/junk regions | Standardized to `Unclassified` |
+| Invalid timestamps | Excluded from cohort assignment only |
+| Missing geolocation rows | Retained for analytical completeness |
+
+---
+
+## Technical Stack
+
+### Core Stack
+- SQL
+- DuckDB
+- pandas
+- Jupyter
+- Git
+
+### Planned Enhancements
+- dbt Core migration
+- GitHub Actions CI/CD
+- BI dashboard layer
+- Slowly Changing Dimensions (SCD Type 2)
+- Forecasting module
+
+---
 
 ## Reproducibility
 
-Every number above is reproducible from this repository.
-
 ```bash
 git clone https://github.com/joyce92200/ecommerce-analytics-engineering.git
+
 cd ecommerce-analytics-engineering
-python -m venv .venv && source .venv/Scripts/activate
+
+python -m venv .venv
+source .venv/Scripts/activate
+
 pip install -r requirements.txt
+
 jupyter notebook notebooks/01_cohort_exploration.ipynb
 ```
 
-Run all cells top-to-bottom (`Kernel → Restart Kernel and Run All Cells`). The test cell at the bottom should report **32/32 passed**. Each finding corresponds to a specific notebook cell whose output matches the numbers in this README.
+Run all notebook cells from top to bottom.
 
-> Note: the raw Excel file is not committed to the repository (excluded via `.gitignore` to keep the repo lean). Place the source file at `data/raw/2026-04-21_elist_data_cleaned.xlsx` before running the notebook.
+Expected result:
+- 32/32 data-quality tests passing
+- Analytical outputs matching documented findings
 
-## The Stack
+---
 
-**Built:** DuckDB · pandas · Jupyter · SQL · Git
-**Roadmap:** dbt Core migration · GitHub Actions CI · BI dashboard layer · SCD Type 2 on `dim_users` · forecasting module on platform revenue
-
-## Repository
+## Repository Structure
 
 ```text
 .
 ├── data/
-│   ├── raw/                          # Bronze · immutable source (.xlsx not committed)
-│   ├── processed/                    # Silver · staging outputs
-│   └── outputs/                      # Final analytical artifacts (charts, diagrams)
+│   ├── raw/
+│   ├── processed/
+│   └── outputs/
 ├── docs/
-│   └── openbuild_findings_one_pager.pdf
 ├── notebooks/
-│   └── 01_cohort_exploration.ipynb
 ├── sql/
 │   ├── staging/
-│   │   ├── stg_orders.sql
-│   │   └── stg_country_lookup.sql
 │   └── marts/
-│       ├── dim_users.sql
-│       ├── dim_product.sql
-│       ├── dim_country.sql
-│       ├── dim_platform.sql
-│       ├── fct_orders.sql
-│       ├── mart_cohort_retention.sql
-│       ├── mart_loyalty_retention.sql
-│       ├── mart_refund_metrics.sql
-│       └── mart_channel_revenue.sql
 └── tests/
-    └── test_models.sql               # 32 data-quality assertions
 ```
-## Reflections
 
-A few things I'd do differently or extend with more time and data:
+---
 
-**What this dataset cannot tell us.** Marketing-channel attribution is essentially missing (the upstream column is >99% null), so the "marketing won't fix retention" claim rests on cohort-timing evidence rather than direct channel comparison. The 2020 loyalty structural break is observable but not diagnosable from this data alone — distinguishing among "program eligibility changed", "checkout default added loyalty signup", or "marketing campaign shifted the recruitment mix" would require operational data not in the source.
+## What This Project Demonstrates
 
-**What I'd build next.** A fulfillment-SLA × refund-rate analysis to test whether laptop refunds correlate with shipping delays — if true, the "spec mismatch" hypothesis weakens and the lever shifts from product description to operations. A loyalty signup-channel breakdown would explain *why* recruitment shifted toward Airpods buyers in 2020.
+This project demonstrates:
+- dimensional modeling
+- analytics engineering workflows
+- SQL transformation design
+- cohort and retention analysis
+- data-quality governance
+- reproducible analytics workflows
+- executive-level analytical communication
 
-**What I learned.** The most valuable findings came from tests catching what I would have missed — the duplicate primary key in `country_lookup_raw`, the EU/AP region codes used as country codes. Tests aren't bureaucratic overhead; they are the analytical instinct that surfaces real problems. The loyalty finding only emerged because I bothered to anti-confounder the analysis (snapshotting loyalty status at acquisition rather than current state) — without that, I'd have measured "loyalty members retain better" and shipped a wrong conclusion.
+---
+
+## Lessons Learned
+
+The strongest findings emerged from rigorous testing and anti-confounding methodology rather than visualization alone.
+
+Two examples:
+- detecting duplicate country mappings through integrity testing
+- preventing reverse-causality bias by snapshotting loyalty status at acquisition time instead of current state
+
+This reinforced a core analytics-engineering principle:
+
+> Reliable business conclusions depend on reliable data contracts.
+
+---
+
+## Future Improvements
+
+With additional operational datasets, the next iteration would include:
+- fulfillment SLA vs refund-rate analysis
+- checkout-funnel analysis by device type
+- loyalty signup-source attribution
+- customer lifetime value modeling
+- forecasting and anomaly detection
 
 ---
 
