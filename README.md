@@ -222,7 +222,7 @@ Specific actions, organized by finding. Each is grounded in a tested or partiall
 
 **1. Investigate ThinkPad Canada specifically.** 21.3% refund rate vs. 12.9% in the US for the same product is an 8.4 pp gap that's almost certainly operational, not product-quality. Audit fulfillment partners, returns policy, and localization (pricing, language, expected specs) for the Canadian market.
 
-**2. Prioritize laptop refund reduction by dollar leak, not rate.** MacBook Air × US has a moderate 12.4% rate but accounts for $365K refunded — more than any other segment. A 2 pp reduction here would yield an estimated $58K quarterly retained revenue. It is financially more impactful than eliminating the worst-rate segment entirely.
+**2. Prioritize laptop refund reduction by dollar leak, not rate.** MacBook Air × US has a moderate 12.4% rate but accounts for $365K refunded — more than any other segment. A 2 pp reduction would retain approximately $58K quarterly revenue (~$232K annualized), making this one of the highest-leverage operational interventions identified in the analysis.
 
 **3. Add a fulfillment-SLA × refund correlation analysis to the next iteration.** If laptops with longer shipping times have higher refund rates, the lever shifts from product-listing accuracy to operations. This requires shipment-tracking data not in the current dataset.
 
