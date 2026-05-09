@@ -14,7 +14,7 @@ SELECT -- Identifiers
     -- Timestamps (cleaned versions only)
     PURCHASE_TS_cleaned AS purchase_ts,
     DATE_TRUNC('month', PURCHASE_TS_cleaned) AS purchase_month,
-    REFUND_TS_cleaned AS refund_ts,
+    REFUND_TS AS refund_ts,
     SHIP_TS AS ship_ts,
     DELIVERY_TS AS delivery_ts,
     CREATED_ON AS account_created_on,
@@ -23,11 +23,12 @@ SELECT -- Identifiers
     PRODUCT_ID AS product_id,
     USD_PRICE_cleaned AS usd_price,
     PURCHASE_PLATFORM AS purchase_platform,
+    MARKETING_CHANNEL_cleaned AS marketing_channel,
     COUNTRY_CODE_cleaned AS country_code,
     LOYALTY_PROGRAM AS is_loyalty_member,
     -- Derived flag for downstream refund analysis
     CASE
-        WHEN REFUND_TS_cleaned IS NOT NULL THEN 1
+        WHEN REFUND_TS IS NOT NULL THEN 1
         ELSE 0
     END AS is_refunded
 FROM orders_raw
