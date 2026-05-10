@@ -1,7 +1,7 @@
 # OpenBuild Analytics Engineering
 
 End-to-end analytics layer for a mid-size global electronics retailer.
-Medallion architecture · star schema · 37 tested transformations · executive-grade findings with falsifiable recommendations.
+Medallion architecture · star schema · 37 tested transformations · actionable recommendations.
 
 [**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3, A4
 
