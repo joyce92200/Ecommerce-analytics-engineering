@@ -37,12 +37,13 @@ DATA_DIR = Path(__file__).parent.parent / "data" / "dashboard"
 
 @st.cache_data
 def load_marts():
-    """Load all CSV marts into pandas DataFrames. Cached for performance."""
     return {
         "cohort_retention": pd.read_csv(DATA_DIR / "mart_cohort_retention.csv"),
         "loyalty_retention": pd.read_csv(DATA_DIR / "mart_loyalty_retention.csv"),
         "refund_metrics": pd.read_csv(DATA_DIR / "mart_refund_metrics.csv"),
         "channel_revenue": pd.read_csv(DATA_DIR / "mart_channel_revenue.csv"),
+        "marketing_acquisition": pd.read_csv(DATA_DIR / "mart_marketing_acquisition.csv"),
+        "product_concentration": pd.read_csv(DATA_DIR / "mart_product_concentration.csv"),
         "dim_country": pd.read_csv(DATA_DIR / "dim_country.csv"),
         "dim_product": pd.read_csv(DATA_DIR / "dim_product.csv"),
         "first_purchase": pd.read_csv(DATA_DIR / "first_purchase_summary.csv"),
@@ -70,7 +71,7 @@ with st.sidebar:
     st.markdown("---")
     page = st.radio(
         "Navigate",
-        ["Overview", "Retention", "Refunds", "Channels", "About"],
+        ["Overview", "Retention", "Refunds", "Channels", "Acquisition", "About"],
         label_visibility="collapsed",
     )
     st.markdown("---")
@@ -84,7 +85,7 @@ if page == "Overview":
     st.title("OpenBuild Retail Analytics")
     st.markdown(
         "End-to-end analytics layer for a mid-size electronics retailer. "
-        "Medallion architecture · star schema · 32 tested transformations."
+        "Medallion architecture · star schema · 37 tested transformations."
     )
 
     st.markdown("### Numbers at a glance")
@@ -99,30 +100,40 @@ if page == "Overview":
         st.metric("Revenue", "$25.9M")
         st.caption("Net of refunds")
     with col4:
-        st.metric("Tests passing", "32 / 32")
+        st.metric("Tests passing", "37 / 37")
         st.caption("All assertions")
 
     st.markdown("---")
-    st.markdown("### Three findings")
+    st.markdown("### Four findings")
 
-    col_a, col_b, col_c = st.columns(3)
+    col_a, col_b = st.columns(2)
     with col_a:
-        st.markdown("**Retention**")
+        st.markdown("**Retention** — *Loyalty's deficit is a channel problem*")
         st.markdown(
-            "Month-1 retention is structurally flat at 0.8%–1.4% across all 48 cohorts. "
-            "**Loyalty members retain 3.6× worse** than non-members — driven by product mix, not discounting."
+            "Loyalty members retain **3.6× worse** than non-members at month 1. "
+            "Mechanism: the **email channel** acquires 60% of loyalty members AND the lowest-AOV buyers. "
+            "The program isn't broken — its acquisition channel is."
         )
+
+        st.markdown("**Refunds** — *Laptops drive most of the leak*")
+        st.markdown(
+            "Refund baseline 4.97%. Laptops dominate top-10 worst segments. "
+            "**MacBook Air × US** = largest dollar leak at $365K. "
+            "Negative result: fulfillment-SLA correlation is weak — investment redirects to spec accuracy."
+        )
+
     with col_b:
-        st.markdown("**Refunds**")
+        st.markdown("**Channels** — *Mobile is a discovery surface*")
         st.markdown(
-            "Laptops drive 2.5–4.3× the company refund rate. "
-            "**MacBook Air × US** is the largest dollar leak at $365K refunded."
+            "Website = **96.8% of revenue**. Mobile AOV is 6.4× lower than web. "
+            "Even mobile-acquired users buy on web ~54% of the time — "
+            "mobile functions as discovery, not transaction."
         )
-    with col_c:
-        st.markdown("**Channels**")
+
+        st.markdown("**Concentration** — *Top-3 dominate, bottom-5 wasted*")
         st.markdown(
-            "Website is **96.8% of lifetime revenue**. Mobile generates 17% of orders but only 3% of revenue — "
-            "investment thesis must target AOV, not order volume."
+            "Top 3 products = **85% of revenue**: Gaming Monitor, AirPods, MacBook Air. "
+            "Bottom 5 = under 5%. Two opposite problems: dangerous concentration AND wasteful fragmentation."
         )
 
 elif page == "Retention":
@@ -447,7 +458,171 @@ elif page == "Channels":
         is desktop-shaped — high-AOV products have <5% mobile order share.
         """
     )
+elif page == "Acquisition":
+    st.title("Acquisition")
+    st.markdown(
+        "Two findings traced to *what gets acquired* and *what gets sold*. "
+        "First: the **email channel** is over-recruiting loyalty members AND under-recruiting on AOV — "
+        "the mechanism behind Finding 1's retention deficit. Second: the **catalog is dangerously concentrated** "
+        "(top 3 = 85% of revenue) AND **wastefully fragmented** (bottom 5 = under 5%)."
+    )
 
+    st.markdown("---")
+
+    # ============================================================
+    # SECTION 1 — Marketing channel × loyalty acquisition
+    # ============================================================
+    st.markdown("## Marketing channel acquisition")
+    st.caption("How each channel's user mix and AOV at acquisition shapes downstream loyalty retention")
+
+    mkt_df = marts["marketing_acquisition"]
+
+    # Filter to meaningful-volume channels
+    big_channels = ['direct', 'email', 'affiliate', 'social media']
+    mkt_filtered = mkt_df[mkt_df['marketing_channel'].isin(big_channels)].copy()
+
+    # KPI strip — 3 cards anchoring the email-channel anomaly
+    email_loyalty_pct = mkt_filtered[
+        (mkt_filtered['marketing_channel'] == 'email')
+        & (mkt_filtered['loyalty_status'] == 1)
+    ]['pct_within_channel'].iloc[0]
+    direct_loyalty_pct = mkt_filtered[
+        (mkt_filtered['marketing_channel'] == 'direct')
+        & (mkt_filtered['loyalty_status'] == 1)
+    ]['pct_within_channel'].iloc[0]
+    email_loyalty_aov = mkt_filtered[
+        (mkt_filtered['marketing_channel'] == 'email')
+        & (mkt_filtered['loyalty_status'] == 1)
+    ]['avg_first_aov'].iloc[0]
+
+    k1, k2, k3 = st.columns(3)
+    with k1:
+        st.metric("Email loyalty share", f"{email_loyalty_pct:.0f}%")
+        st.caption("vs. direct's ~42%")
+    with k2:
+        st.metric("Direct loyalty share", f"{direct_loyalty_pct:.0f}%")
+        st.caption("baseline channel")
+    with k3:
+        st.metric("Email loyalty AOV", f"${email_loyalty_aov:.0f}")
+        st.caption("lowest of any channel × loyalty combo")
+
+    # Chart 1 — Loyalty share by channel (stacked horizontal bar)
+    st.markdown("### Loyalty share by acquisition channel")
+    loyalty_pivot = mkt_filtered.pivot(
+        index='marketing_channel', columns='loyalty_status',
+        values='pct_within_channel'
+    ).reindex(big_channels)
+    loyalty_pivot.columns = ['Non-loyalty', 'Loyalty']
+    st.bar_chart(loyalty_pivot, color=["#185FA5", "#EF9F27"], horizontal=True)
+    st.caption(
+        "Each channel sums to 100%. Email is the only channel where loyalty (60%) dominates. "
+        "Direct is split roughly 60/40 non-loyalty/loyalty. Affiliate is 82% non-loyalty."
+    )
+
+    # Chart 2 — AOV by channel × loyalty (paired bars)
+    st.markdown("### First-purchase AOV by channel × loyalty")
+    aov_pivot = mkt_filtered.pivot(
+        index='marketing_channel', columns='loyalty_status',
+        values='avg_first_aov'
+    ).reindex(big_channels)
+    aov_pivot.columns = ['Non-loyalty', 'Loyalty']
+    st.bar_chart(aov_pivot, color=["#185FA5", "#EF9F27"])
+    st.caption(
+        "AOV at first purchase by channel. Email AOVs are the lowest across both segments — "
+        "email is doing two things wrong simultaneously: over-recruiting into loyalty AND under-recruiting on value."
+    )
+
+    # Drill-down table
+    st.markdown("### Channel × loyalty drill-down")
+    display_df = mkt_filtered[[
+        'marketing_channel', 'loyalty_status', 'users_acquired',
+        'avg_first_aov', 'pct_within_channel'
+    ]].copy()
+    display_df['loyalty_status'] = display_df['loyalty_status'].map({0: 'Non-loyalty', 1: 'Loyalty'})
+    display_df['avg_first_aov'] = display_df['avg_first_aov'].apply(lambda x: f"${x:.0f}")
+    display_df['pct_within_channel'] = display_df['pct_within_channel'].apply(lambda x: f"{x:.1f}%")
+    display_df['users_acquired'] = display_df['users_acquired'].apply(lambda x: f"{x:,}")
+    display_df.columns = ['Channel', 'Segment', 'Users acquired', 'AOV at first purchase', 'Share within channel']
+    st.dataframe(display_df, hide_index=True, use_container_width=True)
+
+    st.markdown("---")
+
+    # ============================================================
+    # SECTION 2 — Product concentration (Pareto)
+    # ============================================================
+    st.markdown("## Product concentration")
+    st.caption("Two opposite problems coexist: dangerous concentration at the top, wasteful fragmentation at the bottom")
+
+    pareto_df = marts["product_concentration"].copy()
+    pareto_df = pareto_df.sort_values('net_revenue', ascending=False).reset_index(drop=True)
+
+    # KPI strip
+    top3_share = pareto_df.head(3)['pct_of_revenue'].sum()
+    bottom5_share = pareto_df.tail(5)['pct_of_revenue'].sum()
+    top1_product = pareto_df.iloc[0]['product_name']
+    top1_share = pareto_df.iloc[0]['pct_of_revenue']
+
+    k1, k2, k3 = st.columns(3)
+    with k1:
+        st.metric("Top 3 products share", f"{top3_share:.1f}%")
+        st.caption("of total revenue")
+    with k2:
+        st.metric("Bottom 5 products share", f"{bottom5_share:.1f}%")
+        st.caption("of total revenue")
+    with k3:
+        st.metric(top1_product, f"{top1_share:.1f}%")
+        st.caption("largest single revenue driver")
+
+    # Chart — Pareto: revenue bars + cumulative line
+    st.markdown("### Revenue distribution (Pareto)")
+    chart_data = pareto_df.set_index('product_name')[['net_revenue']]
+    chart_data['net_revenue'] = chart_data['net_revenue'] / 1_000_000  # to millions
+    chart_data.columns = ['Revenue ($M)']
+    st.bar_chart(chart_data, color="#185FA5")
+
+    # Cumulative line as separate chart
+    st.markdown("### Cumulative revenue share")
+    cum_data = pareto_df.set_index('product_name')[['cumulative_pct_of_revenue']]
+    cum_data.columns = ['Cumulative %']
+    st.line_chart(cum_data, color="#A32D2D")
+    st.caption(
+        "Top 3 products break the 80% Pareto threshold. Beyond the 4th product, additions to "
+        "cumulative revenue are negligible — the long tail consumes ops complexity without delivering value."
+    )
+
+    # Drill-down table
+    st.markdown("### Per-product breakdown")
+    pareto_display = pareto_df[[
+        'product_name', 'orders', 'net_revenue', 'avg_aov',
+        'pct_of_revenue', 'cumulative_pct_of_revenue'
+    ]].copy()
+    pareto_display['orders'] = pareto_display['orders'].apply(lambda x: f"{x:,}")
+    pareto_display['net_revenue'] = pareto_display['net_revenue'].apply(lambda x: f"${x:,.0f}")
+    pareto_display['avg_aov'] = pareto_display['avg_aov'].apply(lambda x: f"${x:.0f}")
+    pareto_display['pct_of_revenue'] = pareto_display['pct_of_revenue'].apply(lambda x: f"{x:.2f}%")
+    pareto_display['cumulative_pct_of_revenue'] = pareto_display['cumulative_pct_of_revenue'].apply(lambda x: f"{x:.1f}%")
+    pareto_display.columns = ['Product', 'Orders', 'Net revenue', 'AOV', '% of revenue', 'Cumulative %']
+    st.dataframe(pareto_display, hide_index=True, use_container_width=True)
+
+    # What this means
+    st.markdown("---")
+    st.markdown("### What this means")
+    st.markdown(
+        """
+        **Two opposite strategic problems coexist.** The top is dangerously concentrated —
+        any supplier change in Apple, Samsung, or the monitor product cycle would erase 20-35%
+        of revenue overnight. The bottom is wastefully fragmented — five products consume catalog
+        real estate, ops complexity, and inventory dollars while contributing negligibly.
+
+        **The Apple iPhone case is interesting.** Despite a $688 AOV (high price-point appeal),
+        it accounts for just 0.8% of revenue. Either it's a quiet opportunity that lacks marketing
+        investment, OR it's a dead SKU with no demand. The current data can't tell us which —
+        a discoverability test (paid ads, homepage feature) is the next analytical step.
+
+        **Strategic priority:** Rationalize the bottom (kill or aggressively scale Bose, iPhone)
+        while diversifying the top to reduce single-supplier risk.
+        """
+    )
 elif page == "About":
     st.title("About")
     st.markdown(
