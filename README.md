@@ -36,8 +36,6 @@ Three-layer medallion model. Each layer has a single job.
 | **Silver** (staging) | Type enforcement, deduplication, null handling | `stg_orders`, `stg_country_lookup` |
 | **Gold** (marts) | Business semantics, dimensional model | 4 dimensions, 1 fact, 6 analytical marts |
 
-Raw is never edited. Silver is rebuilt on every run. Gold is what stakeholders consume.
-
 ![Architecture](data/outputs/architecture_diagram.svg)
 
 ## The Model
