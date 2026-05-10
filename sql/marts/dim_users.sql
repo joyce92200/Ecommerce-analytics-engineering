@@ -1,29 +1,28 @@
--- dim_users: gold-layer user dimension. One row per user.
--- Source: stg_orders. Strategy: rank user's orders, snapshot rank=1 attributes.
+-- dim_users: gold-layer user dimension
+-- Grain: One row per user
+-- Captures attributes AT FIRST PURCHASE (anti-confounder logic)
+-- to enable cohort comparisons that don't suffer from reverse causality.
 
 CREATE OR REPLACE TABLE dim_users AS
-WITH ranked_orders AS (
-    SELECT
-        user_id,
-        purchase_ts,
-        purchase_month,
-        country_code,
-        purchase_platform,
-        product_name,
-        is_loyalty_member,
-        ROW_NUMBER() OVER (
-            PARTITION BY user_id
-            ORDER BY purchase_ts ASC, order_id ASC
-        ) AS order_rank
-    FROM stg_orders
+WITH first_orders AS (
+    SELECT user_id, MIN(purchase_ts) AS first_purchase_ts
+    FROM stg_orders GROUP BY user_id
+),
+first_attrs AS (
+    SELECT DISTINCT s.user_id,
+        FIRST_VALUE(s.loyalty_status) OVER (PARTITION BY s.user_id ORDER BY s.purchase_ts) AS loyalty_at_first_purchase,
+        FIRST_VALUE(s.marketing_channel) OVER (PARTITION BY s.user_id ORDER BY s.purchase_ts) AS marketing_channel_at_first_purchase,
+        FIRST_VALUE(s.account_creation_device) OVER (PARTITION BY s.user_id ORDER BY s.purchase_ts) AS device_at_first_purchase,
+        FIRST_VALUE(s.usd_price) OVER (PARTITION BY s.user_id ORDER BY s.purchase_ts) AS first_purchase_aov
+    FROM stg_orders s
 )
 SELECT
-    user_id,
-    purchase_ts          AS first_purchase_date,
-    purchase_month       AS first_purchase_month,
-    country_code         AS first_purchase_country,
-    purchase_platform    AS first_purchase_platform,
-    product_name         AS first_purchase_product,
-    is_loyalty_member    AS loyalty_at_first_purchase
-FROM ranked_orders
-WHERE order_rank = 1;
+    f.user_id,
+    f.first_purchase_ts,
+    DATE_TRUNC('month', f.first_purchase_ts)::DATE AS first_purchase_month,
+    a.loyalty_at_first_purchase,
+    a.marketing_channel_at_first_purchase,
+    a.device_at_first_purchase,
+    a.first_purchase_aov
+FROM first_orders f
+INNER JOIN first_attrs a ON f.user_id = a.user_id;
