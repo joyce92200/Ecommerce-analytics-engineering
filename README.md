@@ -36,6 +36,8 @@ Three-layer medallion model.
 | **Silver** (staging) | Type enforcement, deduplication, null handling | `stg_orders`, `stg_country_lookup` |
 | **Gold** (marts) | Business semantics, dimensional model | 4 dimensions, 1 fact, 6 analytical marts |
 
+<img width="1497" height="692" alt="architecture_diagram" src="https://github.com/user-attachments/assets/1271efa1-b55f-48c8-86c9-e54f4fd7bbbb" />
+
 ## The Model
 
 Star schema. One fact, four dimensions, six derived marts. Grain: one row per order. The same model answers cohort, retention, refund, channel, acquisition, and concentration questions without rework.
