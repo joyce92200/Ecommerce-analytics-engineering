@@ -471,7 +471,7 @@ with footer_col1:
     st.markdown(
         '<p style="color:#888780; font-size:13px;">'
         '<span style="background:#E1F5EE; color:#0F6E56; padding:2px 8px; border-radius:4px; font-weight:500;">'
-        '✓ 32/32 tests passing'
+        '✓ 37/37 tests passing'
         '</span></p>',
         unsafe_allow_html=True
     )
