@@ -1,6 +1,6 @@
 # OpenBuild Analytics Engineering
 
-From a raw 108K-order Excel file to a tested star schema, a live dashboard, and five findings a CFO could act on tomorrow.
+From a raw 108K-order Excel file to a tested star schema, a live dashboard, and four findings a CFO could act on tomorrow.
 Medallion architecture · star schema · 37 passing tests.
 
 [**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3, A4
@@ -22,7 +22,7 @@ Medallion architecture · star schema · 37 passing tests.
 
 OpenBuild operates across 193 countries with 108K orders collected from 2019 to 2022. Leadership needs reliable answers to four operational questions: which acquisition channels deliver durable customers, where refunds erode margin, which platform deserves the next investment dollar, and how concentrated the catalog is. 
 
-The pipeline turns a raw Excel export into a star schema with 37 passing tests, a live dashboard, and a one-page PDF for executives. Five findings come out of it. Each names a cause, weights the evidence, and ends in a decision someone can make on Monday.
+The pipeline turns a raw Excel export into a star schema with 37 passing tests, a live dashboard, and a one-page PDF for executives. Four findings come out of it. Each names a cause, weights the evidence, and ends in a decision someone can make on Monday.
 
 ---
 
@@ -56,7 +56,7 @@ Grain: one row per order. The same model answers cohort, retention, refund, chan
 
 ## The Findings
 
-Five findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
+Four findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
 ---
 
