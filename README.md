@@ -20,15 +20,15 @@ Medallion architecture · star schema · 37 tested transformations · executive-
 
 ## Executive Summary
 
-OpenBuild operates across 193 countries with 108K orders collected from 2019 to 2022. Leadership needs reliable answers to four operational questions: which acquisition channels deliver durable customers, where refunds erode margin, which platform deserves the next investment dollar, and how concentrated the catalog is. Raw transactional data cannot answer them directly — the gap is a modeled, tested data layer.
+OpenBuild operates across 193 countries with 108K orders collected from 2019 to 2022. Leadership needs reliable answers to four operational questions: which acquisition channels deliver durable customers, where refunds erode margin, which platform deserves the next investment dollar, and how concentrated the catalog is. 
 
-This project delivers that layer: a 3-layer medallion architecture, a star-schema dimensional model, 37 automated data-quality tests, and reproducible SQL and notebook workflows. Five findings emerged, each pushed past correlation to mechanism where the data allows, and each paired with concrete, falsifiable recommendations.
+This project delivers a production-style analytics foundations : a 3-layer medallion architecture, a star-schema dimensional model, 37 automated data-quality tests, and reproducible SQL and notebook workflows. Five findings emerged, each supported by evidence-driven investigation and paried with actionable business recommendations. 
 
 ---
 
 ## The Architecture
 
-Three-layer medallion model. Each layer has a single job.
+Three-layer medallion model. 
 
 | Layer | Purpose | Contents |
 |---|---|---|
@@ -60,7 +60,7 @@ Star schema. One fact, four dimensions, six derived marts. Grain: one row per or
 
 ## The Findings
 
-Five executive-grade findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
+Five findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
 ---
 
