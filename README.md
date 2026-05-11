@@ -3,7 +3,7 @@
 From a raw 108K-order Excel file to a tested star schema, a live dashboard, and four findings a CFO could act on tomorrow.
 Medallion architecture · star schema · 37 passing tests.
 
-[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3, A4
+[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 SQL & Methodology Appendix (PDF)**](docs/openbuild_findings_one_pager.pdf)
 
 ---
 
