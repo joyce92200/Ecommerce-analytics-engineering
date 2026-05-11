@@ -1,7 +1,7 @@
 # OpenBuild Analytics Engineering
 
-End-to-end analytics layer for a mid-size global electronics retailer.
-Medallion architecture · star schema · 37 tested transformations · executive-grade findings with falsifiable recommendations.
+From a raw 108K-order Excel file to a tested star schema, a live dashboard, and four findings a CFO could act on tomorrow.
+Medallion architecture · star schema · 37 passing tests.
 
 [**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3, A4
 
@@ -22,13 +22,11 @@ Medallion architecture · star schema · 37 tested transformations · executive-
 
 OpenBuild operates across 193 countries with 108K orders collected from 2019 to 2022. Leadership needs reliable answers to four operational questions: which acquisition channels deliver durable customers, where refunds erode margin, which platform deserves the next investment dollar, and how concentrated the catalog is. 
 
-This project delivers a production-style analytics foundations : a 3-layer medallion architecture, a star-schema dimensional model, 37 automated data-quality tests, and reproducible SQL and notebook workflows. Five findings emerged, each supported by evidence-driven investigation and paried with actionable business recommendations. 
+The pipeline turns a raw Excel export into a star schema with 37 passing tests, a live dashboard, and a one-page PDF for executives. Four findings come out of it. Each names a cause, weights the evidence, and ends in a decision someone can make on Monday.
 
 ---
 
 ## The Architecture
-
-Three-layer medallion model. 
 
 | Layer | Purpose | Contents |
 |---|---|---|
@@ -36,9 +34,9 @@ Three-layer medallion model.
 | **Silver** (staging) | Type enforcement, deduplication, null handling | `stg_orders`, `stg_country_lookup` |
 | **Gold** (marts) | Business semantics, dimensional model | 4 dimensions, 1 fact, 6 analytical marts |
 
-## The Model
+## The Model - Star Schema
 
-Star schema. One fact, four dimensions, six derived marts. Grain: one row per order. The same model answers cohort, retention, refund, channel, acquisition, and concentration questions without rework.
+Grain: one row per order. The same model answers cohort, retention, refund, channel, acquisition, and concentration questions without rework.
 
 - `dim_users` — one row per user; attributes locked at acquisition time including loyalty status, marketing channel, device, and first-purchase AOV (87,625 rows)
 - `dim_product` — one row per product (8 rows)
@@ -58,19 +56,19 @@ Star schema. One fact, four dimensions, six derived marts. Grain: one row per or
 
 ## The Findings
 
-Five findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
+Four findings backed by the SQL marts above. Each cause is labeled `tested` (validated in this analysis), `partially tested` (directional evidence), or `hypothesis` (plausible but requires further data).
 
 ---
 
-### Finding 1 — Loyalty's retention deficit is a channel problem, not a program problem
+### Finding 1 — Loyalty members don't come back — but it's not the loyalty program's fault. It's where we recruit them from.
 
 **Result.** Two layered findings, same dataset:
 
-**1a. Loyalty membership at acquisition correlates with 3.6× *worse* retention at month 1.** Loyalty members retain at **0.45%** in month 1 vs. **1.63%** for non-loyalty members (averaged across all 48 cohorts). The deficit is **front-loaded — it converges to parity by month 9**. The gap emerged in 2020: in 2019 loyalty cohorts retained nearly on par; from 2020 onward, the deficit is 4–6×. Mechanism: loyalty disproportionately recruits **AirPods buyers (58.1% of loyalty first-purchases vs. 36.7% non-loyalty) and underweights replenishables (5.7% Charging Cable Pack vs. 33.6% non-loyalty)**. AOVs are roughly equal at acquisition ($240 loyalty vs. $259 non-loyalty), so this is *not* a discount-driven selection effect — it is a product-mix recruitment effect.
+**1a. Loyalty membership at acquisition correlates with 3.6× *worse* retention at month 1.** Loyalty members retain at **0.45%** in month 1 vs. **1.63%** for non-loyalty members (averaged across all 48 cohorts). The deficit is **front-loaded — it converges to parity by month 9**. The gap emerged in 2020: in 2019 loyalty cohorts retained nearly on par; from 2020 onward, the deficit is 4–6×. Mechanism: loyalty disproportionately recruits **AirPods buyers (58.1% of loyalty first-purchases vs. 36.7% non-loyalty) and underweights replenishables (5.7% Charging Cable Pack vs. 33.6% non-loyalty)**. First-purchase AOVs are basically the same ($240 vs. $259). So the program isn't attracting cheaper buyers — it's attracting different buyers. Loyalty pulls in AirPods customers, who buy once and disappear. Non-loyalty pulls in cable-pack buyers, who come back.
 
 **1b. The email channel is the loyalty signup pipeline — and it's a low-quality pipeline.** The email channel acquires **60% loyalty members** (vs. direct's 42%, affiliate's 18%) AND those email-acquired loyalty members carry the lowest first-purchase AOV at **$200** (vs. direct loyalty's $253, affiliate non-loyalty's $302). Email also has the lowest non-loyalty AOV ($142). The loyalty deficit is therefore not caused by the program itself — it is caused by *where loyalty signups originate*.
 
-**Implication.** The loyalty program is currently amplifying the email channel's structural retention problem. The lever is **acquisition channel mix**, not program redesign.
+**Implication.** Email brings in low-AOV, one-purchase buyers. The loyalty program then enrolls them and locks the pattern in. Fix the channel mix and the loyalty numbers fix themselves — redesigning the program does nothing.
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -117,7 +115,7 @@ Five findings backed by the SQL marts above. Each cause is labeled `tested` (val
 
 **Result.** Website = **96.8% of lifetime revenue** ($25.0M of $25.9M). Mobile generates **17.1% of orders (18,484 of 108,091) but only 3.2% of revenue ($832K)** — implying mobile AOV is roughly **6.4× lower** than web AOV ($46 vs. $296). The mix has been stable: mobile share moved from 2.95% (2019) to 3.93% (2022) over 48 months.
 
-**Implication.** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue. The mobile app is more accurately understood as a **discovery surface than a transaction surface**: even mobile-acquired users (those who created their account on mobile) purchase through the website roughly half the time, suggesting that high-AOV transactions migrate to web checkout. The lever is conversion-quality on the app, not acquisition volume.
+**Implication.** Mobile investment thesis must target AOV, not order volume. At current AOV, doubling mobile order volume only adds ~3 percentage points to total revenue. Even users who sign up on mobile end up buying on the website about half the time, and the bigger the purchase the more likely the switch. The app is where people browse. The website is where they buy. Treat the app as a top-of-funnel asset, not a revenue channel. The lever is conversion-quality on the app, not acquisition volume.
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -133,11 +131,11 @@ Five findings backed by the SQL marts above. Each cause is labeled `tested` (val
 
 ---
 
-### Finding 4 — The catalog is dangerously concentrated AND wastefully fragmented
+### Finding 4 — Three products earn 85% of revenue. Five products earn under 5%. Both ends are a problem.
 
 **Result.** Top 3 products = **85% of revenue**: 27in 4K Gaming Monitor (35.6%), Apple AirPods (28.2%), MacBook Air (21.4%). The bottom 5 products combined = **under 5% of revenue**: Bose Soundsport had 27 lifetime orders ($3,339); Apple iPhone, despite a $688 AOV, accounts for 0.8% of revenue (288 orders).
 
-**Implication.** Two opposite strategic problems coexist. The top is dangerously concentrated — any supplier change in Apple, Samsung, or the monitor product cycle would erase 20–35% of revenue overnight. The bottom is wastefully fragmented — five products consume catalog real estate, ops complexity, and inventory dollars while contributing negligibly. Strategic priority: **rationalize the bottom (kill or aggressively scale Bose, iPhone) while diversifying the top to reduce single-supplier risk.**
+**Implication.** Two opposite strategic problems coexist. The top is dangerously concentrated — any supplier change in Apple, Samsung, or the monitor product cycle would erase 20–35% of revenue overnight. The bottom is wastefully fragmented — five products consume catalog real estate, ops complexity, and inventory dollars while contributing negligibly. Strategic priority: **Two decisions are overdue: (1) decide whether Bose and iPhone get marketing money or get cut — the data can't tell you which until you test discoverability; (2) find a second supplier for at least one top-3 SKU before a single Apple stockout takes 30% of revenue with it.**
 
 | Cause | Weight | Status |
 |---|---|---|
@@ -155,12 +153,12 @@ Five findings backed by the SQL marts above. Each cause is labeled `tested` (val
 
 ## Recommendations
 
-Specific, falsifiable actions organized by finding. Each is grounded in a tested or partially-tested cause from above.
+Each recommendation below names the action, the cause it addresses, and the test that would prove it wrong. Skip to the section that matches the finding you care about.
 
 ### From Finding 1 — Retention & Loyalty
 
 1. **Restructure loyalty signup mechanics to favor replenishable categories.** Loyalty disproportionately recruits AirPods buyers (58.1%). Replace generic signup offers with category-specific ones — *e.g.*, "Join loyalty, get a free Charging Cable Pack." Addresses the recruitment-mix root cause without changing the program's points or discount structure.
-2. **Run a 60-day test withholding loyalty enrollment from one-and-done categories.** Pause auto-enroll on AirPods purchases for two months and measure month-1 retention of the affected cohort. If retention rises toward the 1.63% non-loyalty baseline, the recruitment-mix hypothesis is confirmed; the program then needs a redesign, not just amplification.
+2. **Run a 60-day natural experiment on AirPods.** Turn off loyalty auto-enrollment for AirPods purchases for two months. If month-1 retention for that cohort rises toward 1.63% (the non-loyalty baseline), the channel-mix story is confirmed and the program itself needs redesign. If it doesn't move, the program is the problem and we go back to the drawing board. Either way we learn something the current data can't tell us.
 3. **Stop using "loyalty member AOV" as a program success metric.** AOV at first purchase is roughly equal across segments ($240 vs. $259) — the program isn't driving spend, it's selecting buyers. Replace this KPI with **month-12 retention rate by signup cohort**, which directly measures whether members come back.
 4. **Reroute loyalty signup mechanics out of email-driven flows.** Email is the only channel where loyalty (60%) dominates AND where AOV is lowest ($142–$200). Test moving the loyalty CTA away from email checkout into direct and affiliate flows that already recruit higher-AOV, lower-loyalty-concentration buyers.
 
@@ -282,7 +280,7 @@ A few things worth surfacing — what the data can't tell us, what I'd build nex
 
 **What I'd build next.** A loyalty signup-channel breakdown joining customer-touchpoint data would explain *why* email concentrates loyalty — is it the email creative, the landing page, or the checkout flow? A fulfillment-SLA × refund-rate analysis was attempted; the correlation is weak (4.7% refund at ≤5 day SLA vs. 5.0% at 6–10 days), suggesting the laptop refund problem is product/specification-driven rather than fulfillment-driven. **That negative finding now joins the project** — the spec-mismatch hypothesis strengthens; the fulfillment hypothesis weakens. Negative results matter; they redirect future investment.
 
-**What I learned.** The most valuable findings came from tests catching what I would have missed — the duplicate primary key in `country_lookup_raw`, the EU/AP region codes used as country codes, and the cumulative-percentage window function's framing clause (`ROWS` vs `RANGE`) that would have silently produced wrong concentration metrics. Tests aren't bureaucratic overhead; they are the analytical instinct that surfaces real problems. The loyalty finding only emerged because I anti-confounded the analysis — snapshotting loyalty status, marketing channel, and device at acquisition rather than current state. Without that, I'd have measured "loyalty members retain better" and shipped a wrong conclusion. Then the data refresh added marketing-channel attribution, which let me trace the loyalty deficit one layer deeper: the program isn't broken, the channel that feeds it is. Good analytics work updates findings as data improves.
+**What I learned.** The most valuable findings came from tests catching what I would have missed — the duplicate primary key in `country_lookup_raw`, the EU/AP region codes used as country codes, and the cumulative-percentage window function's framing clause (`ROWS` vs `RANGE`) that would have silently produced wrong concentration metrics. Without those tests, two of these findings would have been silently wrong. That's not overhead — that's the difference between an analyst and a liability. The loyalty finding only emerged because I anti-confounded the analysis — snapshotting loyalty status, marketing channel, and device at acquisition rather than current state. Without that, I'd have measured "loyalty members retain better" and shipped a wrong conclusion. Then the data refresh added marketing-channel attribution, which let me trace the loyalty deficit one layer deeper: the program isn't broken, the channel that feeds it is. Good analytics work updates findings as data improves.
 
 ---
 
