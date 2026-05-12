@@ -56,6 +56,7 @@ Grain: one row per order. The same model answers cohort, retention, refund, chan
 
 ![ERD](data/outputs/erd.png)
 
+</details>
 ---
 
 ## The Findings
