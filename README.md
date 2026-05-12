@@ -50,7 +50,8 @@ Grain: one row per order. The same model answers cohort, retention, refund, chan
 - `mart_refund_metrics` — refund rate and revenue leak by product × country
 - `mart_channel_revenue` — monthly orders and revenue by purchase platform
 
-<img width="1377" height="687" alt="architecture_diagram" src="https://github.com/user-attachments/assets/74a682ba-0473-4921-9c7e-b8fe6066e5a2" />
+<img width="3976" height="2356" alt="openbuild_dbt_dag" src="https://github.com/user-attachments/assets/aa07984d-3e3e-4777-873f-d3c3f0abb03f" />
+
 <details>
 <summary>📋 View full ERD with columns and relationships</summary>
 
