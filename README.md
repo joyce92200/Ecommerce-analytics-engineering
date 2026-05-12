@@ -3,7 +3,7 @@
 From a raw 108K-order Excel file to a tested star schema, a live dashboard, and four findings a CFO could act on tomorrow.
 Medallion architecture · star schema · 37 passing tests.
 
-[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 Executive 1-pager (PDF)**](docs/openbuild_findings_one_pager.pdf) — methodology in Appendix A1, A1b, A2, A3, A4
+[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 SQL & Methodology Appendix (PDF)**](docs/openbuild_findings_one_pager.pdf)
 
 ---
 
@@ -280,7 +280,7 @@ A few things worth surfacing — what the data can't tell us, what I'd build nex
 
 **What I'd build next.** A loyalty signup-channel breakdown joining customer-touchpoint data would explain *why* email concentrates loyalty — is it the email creative, the landing page, or the checkout flow? A fulfillment-SLA × refund-rate analysis was attempted; the correlation is weak (4.7% refund at ≤5 day SLA vs. 5.0% at 6–10 days), suggesting the laptop refund problem is product/specification-driven rather than fulfillment-driven. **That negative finding now joins the project** — the spec-mismatch hypothesis strengthens; the fulfillment hypothesis weakens. Negative results matter; they redirect future investment.
 
-**What I learned.** The most valuable findings came from tests catching what I would have missed — the duplicate primary key in `country_lookup_raw`, the EU/AP region codes used as country codes, and the cumulative-percentage window function's framing clause (`ROWS` vs `RANGE`) that would have silently produced wrong concentration metrics. Without those tests, two of these findings would have been silently wrong. That's not overhead — that's the difference between an analyst and a liability. The loyalty finding only emerged because I anti-confounded the analysis — snapshotting loyalty status, marketing channel, and device at acquisition rather than current state. Without that, I'd have measured "loyalty members retain better" and shipped a wrong conclusion. Then the data refresh added marketing-channel attribution, which let me trace the loyalty deficit one layer deeper: the program isn't broken, the channel that feeds it is. Good analytics work updates findings as data improves.
+**What I learned.** The most valuable findings came from tests catching what I would have missed — the duplicate primary key in `country_lookup_raw`, the EU/AP region codes used as country codes, and the cumulative-percentage window function's framing clause (`ROWS` vs `RANGE`) that would have silently produced wrong concentration metrics. Without those tests, two of these findings would have been silently wrong. The loyalty finding only emerged because I anti-confounded the analysis — snapshotting loyalty status, marketing channel, and device at acquisition rather than current state. Without that, I'd have measured "loyalty members retain better" and shipped a wrong conclusion. Then the data refresh added marketing-channel attribution, which let me trace the loyalty deficit one layer deeper: the program isn't broken, the channel that feeds it is.
 
 ---
 
