@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: >
+      One row per order, cleaned and typed. VARCHAR bronze columns
+      cast to proper types. Rows with unparseable purchase timestamps
+      are dropped (3 rows per README data-quality decisions).
+      NULL-price rows (~33) are retained but excluded by downstream
+      revenue calculations.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "LENGTH(user_id) <= 19"
+          config:
+            severity: warn
+            meta:
+              known_issue: "332 user_id values exceed 19 chars; floating-point coercion artifact in source"
+    columns:
+      - name: order_id
+        description: Primary key. Unique identifier for an order.
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: >
+          Foreign key to dim_users. Stored as VARCHAR (not BIGINT)
+          because 332 source rows have user_id values exceeding INT64
+          range (floating-point coercion artifact in source export).
+          String storage preserves the identifier without data loss.
+          Investigation of the 332 affected rows deferred; see README
+          'Future work' once dbt migration is complete.
+        tests:
+          - not_null
+
+
+      - name: product_id
+        description: Foreign key to dim_product.
+        tests:
+          - not_null
+
+      - name: purchase_ts
+        description: Timestamp the order was placed. NEVER NULL in silver.
+        tests:
+          - not_null
+
+      - name: purchase_month
+        description: First-day-of-month truncation of purchase_ts.
+        tests:
+          - not_null
+
+      - name: usd_price
+        description: >
+          Price in USD. ~33 rows are NULL (source data quality issue
+          documented in README). Excluded from revenue aggregations.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~33 NULL prices in source; excluded by revenue aggregations downstream"
+
+      - name: purchase_platform
+        description: Channel the order was placed on.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['website', 'mobile app']
+
+      - name: is_loyalty_member
+        description: 1 if the user was a loyalty member at order time, 0 otherwise.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: is_refunded
+        description: Derived flag. 1 if refund_ts is populated, 0 otherwise.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: country_code
+        description: ISO country code. Tested via FK relationship when dim_country exists.
+      - name: marketing_channel
+        description: Marketing channel at acquisition. Accepted values tested in dim_users.
+      - name: refund_ts
+        description: Timestamp the order was refunded. NULL if not refunded.
+      - name: ship_ts
+        description: Timestamp the order was shipped. NULL if not yet shipped.
+      - name: delivery_ts
+        description: Timestamp the order was delivered. NULL if not yet delivered.
+      - name: account_created_on
+        description: Timestamp the user's account was created.
+      - name: product_name
+        description: Human-readable product name. Tested in dim_product.
