@@ -82,7 +82,16 @@ models:
               values: [0, 1]
 
       - name: country_code
-        description: ISO country code. Tested via FK relationship when dim_country exists.
+        description: >
+          ISO country code from source (cleaned variant). ~154 source
+          orders lack a country code; surfaced via warn-severity test
+          and preserved through silver/gold layers as NULL.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~154 orders with NULL country_code; source data gap"
       - name: marketing_channel
         description: >
           Marketing channel at acquisition. Source 'NaN' strings coerced

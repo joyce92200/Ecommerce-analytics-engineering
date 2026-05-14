@@ -134,3 +134,130 @@ models:
               config:
                 meta:
                   known_issue: "27 users with NULL price on first purchase"
+
+  - name: fct_orders
+    description: >
+      Order-grain fact table. 108,124 rows. Join point of the gold
+      layer: stg_orders joined to dim_users for cohort attribution,
+      with derived columns powering downstream marts.
+      Methodological note: cohort_month derives from the USER's first
+      purchase month (via dim_users), NOT this order's own month.
+      This preserves the snapshot logic that prevents reverse-causality
+      contamination in retention analyses.
+    columns:
+      - name: order_id
+        description: Primary key. Identifier from source.
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: Foreign key to dim_users.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
+
+      - name: purchase_ts
+        description: Timestamp this order was placed.
+        tests:
+          - not_null
+
+      - name: purchase_month
+        description: First-day-of-month truncation of purchase_ts.
+        tests:
+          - not_null
+
+      - name: cohort_month
+        description: >
+          User's first-purchase month, copied from dim_users. NOT this
+          order's purchase month. Cohort assignment is fixed at user
+          acquisition and never moves.
+        tests:
+          - not_null
+
+      - name: months_since_acquisition
+        description: >
+          Months between cohort_month and purchase_month. Zero for the
+          user's first purchase; increases for subsequent orders.
+          Always non-negative (an order can't precede its own cohort).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              config:
+                meta:
+                  description: "No order may precede its user's cohort_month."
+
+      - name: user_order_seq
+        description: 1-based rank of this order within the user's purchase history. Tie-broken by order_id.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+
+      - name: is_first_purchase
+        description: 1 if user_order_seq=1, else 0. Convenient flag for acquisition-order analyses.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: is_refunded
+        description: Inherited from stg_orders. 1 if refund_ts populated, else 0.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: loyalty_status
+        description: >
+          Order-time loyalty status (NOT snapshotted - this is the value
+          on this specific order). Compare to dim_users.loyalty_at_first_purchase
+          for cohort-vs-current analyses.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: product_name
+        description: Foreign key to dim_product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_name
+
+      - name: purchase_platform
+        description: Foreign key to dim_platform.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_platform')
+              field: platform_name
+
+      - name: country_code
+        description: >
+          Foreign key to dim_country. dim_country includes 2 synthetic
+          rows (EU, AP) absorbing region-codes-as-country-codes orders.
+          ~154 orders have NULL country_code (source data quality issue
+          not previously documented; surfaced by dbt migration).
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~154 orders with NULL country_code; source data gap"
+          - relationships:
+              to: ref('dim_country')
+              field: country_code
+
+      - name: usd_price
+        description: Inherited from stg_orders. ~33 NULL prices upstream.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~33 rows with NULL usd_price from source"
