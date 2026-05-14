@@ -36,7 +36,7 @@ SELECT
     PRODUCT_ID                                              AS product_id,
     TRY_CAST(USD_PRICE_cleaned AS DOUBLE)                  AS usd_price,
     PURCHASE_PLATFORM                                      AS purchase_platform,
-    MARKETING_CHANNEL_cleaned                              AS marketing_channel,
+    NULLIF(MARKETING_CHANNEL_cleaned, 'NaN')              AS marketing_channel,
     NULLIF(ACCOUNT_CREATION_METHOD_cleaned, 'NaN')         AS account_creation_device,
     COUNTRY_CODE_cleaned                                   AS country_code,
     CAST(LOYALTY_PROGRAM AS INTEGER)                       AS loyalty_status,

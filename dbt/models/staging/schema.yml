@@ -84,7 +84,18 @@ models:
       - name: country_code
         description: ISO country code. Tested via FK relationship when dim_country exists.
       - name: marketing_channel
-        description: Marketing channel at acquisition. Accepted values tested in dim_users.
+        description: >
+          Marketing channel at acquisition. Source 'NaN' strings coerced
+          to SQL NULL in silver (~1,153 rows). Accepted values tested in
+          dim_users.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~1,153 rows with NULL marketing_channel after NaN coercion"
+          - accepted_values:
+              values: ['direct', 'email', 'affiliate', 'social media', 'unknown']
 
       - name: account_creation_device
         description: >

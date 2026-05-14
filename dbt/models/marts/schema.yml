@@ -1,0 +1,136 @@
+version: 2
+
+models:
+  - name: dim_platform
+    description: >
+      One row per purchase platform. 2 rows. The platform_type column
+      rolls platforms into broader categories (web, mobile) and is
+      positioned for future enrichment.
+    columns:
+      - name: platform_name
+        description: Primary key. Source platform name from stg_orders.
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['website', 'mobile app']
+
+      - name: platform_type
+        description: Broader platform category. Currently web or mobile.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['web', 'mobile']
+
+  - name: dim_country
+    description: >
+      One row per country code. 193 rows = 191 from stg_country_lookup
+      + 2 synthetic rows ('EU', 'AP') absorbing 18 orders that use region
+      codes as country codes (README data quality decision).
+    columns:
+      - name: country_code
+        description: Primary key. ISO country code or synthetic region code.
+        tests:
+          - not_null
+          - unique
+
+      - name: region
+        description: Regional rollup. AMER, EMEA, APAC, LATAM, or Unclassified.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AMER', 'EMEA', 'APAC', 'LATAM', 'Unclassified']
+
+  - name: dim_product
+    description: >
+      One row per product. 8 rows. product_name is the canonical
+      identifier; source product_id is an opaque 4-char hash not
+      used downstream.
+    columns:
+      - name: product_name
+        description: Primary key. Canonical product name from stg_orders.
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values:
+                - 'Apple Airpods Headphones'
+                - '27in 4K gaming monitor'
+                - 'Samsung Charging Cable Pack'
+                - 'Samsung Webcam'
+                - 'Macbook Air Laptop'
+                - 'ThinkPad Laptop'
+                - 'Apple iPhone'
+                - 'bose soundsport headphones'
+
+  - name: dim_users
+    description: >
+      One row per user. 87,625 users. THE METHODOLOGICALLY CRITICAL
+      MODEL OF THE PROJECT: loyalty_status, marketing_channel, device,
+      and first_purchase_aov are SNAPSHOTTED AT FIRST PURCHASE to avoid
+      reverse causality. README documents this as the single most
+      important methodological choice. Tie-breaker on order_id ensures
+      deterministic results across runs.
+    columns:
+      - name: user_id
+        description: Primary key.
+        tests:
+          - not_null
+          - unique
+
+      - name: first_purchase_ts
+        description: Timestamp of the user's first order.
+        tests:
+          - not_null
+
+      - name: first_purchase_month
+        description: First-day-of-month truncation of first_purchase_ts. Used as cohort_month downstream.
+        tests:
+          - not_null
+
+      - name: loyalty_at_first_purchase
+        description: >
+          Loyalty status (0/1) on the user's first order. NEVER updated
+          after first purchase; this is the snapshot that powers the
+          loyalty retention finding.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: marketing_channel_at_first_purchase
+        description: >
+          Marketing channel attributed to the user at first purchase.
+          ~1,153 NULL after NaN coercion at silver.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~1,153 users with NULL channel at first purchase"
+          - accepted_values:
+              values: ['direct', 'email', 'affiliate', 'social media', 'unknown']
+
+      - name: device_at_first_purchase
+        description: >
+          Account creation device captured at the user's first purchase.
+          ~1,153 NULL after NaN coercion at silver.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~1,153 users with NULL device at first purchase"
+          - accepted_values:
+              values: ['desktop', 'mobile', 'unknown', 'tablet', 'tv']
+
+      - name: first_purchase_aov
+        description: >
+          USD price of the user's first-purchase order. ~27 NULL where
+          the user's first order had no recorded price.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "27 users with NULL price on first purchase"
