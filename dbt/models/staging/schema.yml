@@ -95,3 +95,26 @@ models:
         description: Timestamp the user's account was created.
       - name: product_name
         description: Human-readable product name. Tested in dim_product.
+
+  - name: stg_country_lookup
+    description: >
+      One row per country code. 191 rows after deduplication.
+      Source defects resolved here (per sources.yml):
+        - NULL country_code row dropped (orphan, was region='EMEA')
+        - US deduplicated (source had 2 rows with conflicting regions
+          'x' and 'North America'; canonicalized to 'AMER')
+        - NULL/junk regions mapped to 'Unclassified'
+        - US and CA forced to canonical 'AMER' region
+    columns:
+      - name: country_code
+        description: ISO country code. Primary key.
+        tests:
+          - not_null
+          - unique
+
+      - name: region
+        description: Regional rollup. AMER, EMEA, APAC, LATAM, or Unclassified.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AMER', 'EMEA', 'APAC', 'LATAM', 'Unclassified']
