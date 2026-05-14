@@ -1,16 +1,16 @@
 loyalty_status,product_name,first_orders
 0,Apple Airpods Headphones,17760
-1,ThinkPad Laptop,1068
-1,bose soundsport headphones,18
-1,Apple Airpods Headphones,22794
+0,Samsung Charging Cable Pack,16485
+0,27in 4K gaming monitor,9232
+0,Macbook Air Laptop,2485
 0,ThinkPad Laptop,1211
+0,Samsung Webcam,1114
 0,Apple iPhone,220
 0,bose soundsport headphones,6
+1,Apple Airpods Headphones,22794
+1,27in 4K gaming monitor,7805
 1,Samsung Webcam,4867
-0,Samsung Webcam,1114
-1,27in 4K gaming monitor,7806
 1,Samsung Charging Cable Pack,2238
+1,ThinkPad Laptop,1068
 1,Macbook Air Laptop,322
-0,Samsung Charging Cable Pack,16485
-0,27in 4K gaming monitor,9231
-0,Macbook Air Laptop,2485
+1,bose soundsport headphones,18

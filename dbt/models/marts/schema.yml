@@ -660,3 +660,43 @@ models:
           - not_null
           - dbt_utils.expression_is_true:
               expression: "BETWEEN 0 AND 100"
+
+  - name: first_purchase_summary
+    description: >
+      Count of users whose FIRST purchase was a given product, split by
+      loyalty status at acquisition. Up to 16 rows max (2 loyalty values
+      x 8 products); actual is 15 (no loyalty members chose Apple iPhone
+      as a first purchase).
+
+      Powers README finding 1a mechanism: "loyalty disproportionately
+      recruits AirPods buyers (58.3% of loyalty first-purchases) and
+      underweights replenishables (5.7% Charging Cable Pack)." This mart
+      is the evidence behind the product-mix explanation for the loyalty
+      retention deficit.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - loyalty_status
+            - product_name
+    columns:
+      - name: loyalty_status
+        description: Snapshotted loyalty_at_first_purchase from dim_users.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: product_name
+        description: Product name of the user's first purchase. FK to dim_product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_name
+
+      - name: first_orders
+        description: Number of users whose first purchase was this product.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
