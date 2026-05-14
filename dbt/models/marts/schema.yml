@@ -261,3 +261,402 @@ models:
               config:
                 meta:
                   known_issue: "~33 rows with NULL usd_price from source"
+
+  - name: mart_channel_revenue
+    description: >
+      Monthly revenue by platform. 96 rows (48 months x 2 platforms).
+      Includes orders count, gross and net revenue, and within-month
+      share of net revenue. Supports the dashboard's channel-mix and
+      platform-trend analyses.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - purchase_month
+            - purchase_platform
+    columns:
+      - name: purchase_month
+        description: First day of the month the orders were placed.
+        tests:
+          - not_null
+
+      - name: purchase_platform
+        description: Platform the orders came from. Foreign key to dim_platform.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['website', 'mobile app']
+          - relationships:
+              to: ref('dim_platform')
+              field: platform_name
+
+      - name: orders
+        description: Number of orders in this (month, platform).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: gross_revenue_usd
+        description: Sum of usd_price for all orders (including refunded).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: net_revenue_usd
+        description: Sum of usd_price for non-refunded orders only.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: share_of_month_pct
+        description: This platform's share of the month's total net revenue. Bounded [0, 100].
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+  - name: mart_refund_metrics
+    description: >
+      Refund analysis by (product, country). 841 rows. Provides dual
+      perspective: count-based refund_rate_pct and value-based
+      refunded_revenue_pct. The two can diverge meaningfully when
+      higher-AOV orders refund at different rates than the average.
+      Rows with NULL country_code (154 orders across 4 products)
+      cluster into 4 rows of this output.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - product_name
+            - country_code
+    columns:
+      - name: product_name
+        description: Foreign key to dim_product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_name
+
+      - name: country_code
+        description: >
+          Foreign key to dim_country. ~4 rows have NULL country_code
+          aggregating the 154 source orders without a country.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "4 rows aggregating 154 NULL-country orders"
+
+      - name: orders
+        description: Number of orders in this (product, country).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: refunds
+        description: Number of orders in this group that were refunded.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: refund_rate_pct
+        description: Percent of orders refunded. Bounded [0, 100].
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+      - name: gross_revenue_usd
+        description: Sum of usd_price for orders in this group (includes refunds).
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: refunded_revenue_usd
+        description: Sum of usd_price for refunded orders only.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: net_revenue_usd
+        description: Sum of usd_price for non-refunded orders only.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: refunded_revenue_pct
+        description: >
+          Percent of revenue refunded. Can be NULL if all orders had
+          NULL usd_price (defensive NULLIF). Otherwise bounded [0, 100].
+
+  - name: mart_product_concentration
+    description: >
+      Pareto / concentration analysis. 8 rows (one per product) ordered
+      by revenue descending. Includes per-product revenue share AND
+      cumulative revenue share across the catalog. Powers the Top-3
+      concentration finding (top 3 products = 85% of revenue).
+
+      Note: 33 NULL-usd_price orders excluded at the CTE WHERE clause,
+      consistent with README data-quality decisions.
+    columns:
+      - name: product_name
+        description: Primary key. Foreign key to dim_product.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_product')
+              field: product_name
+
+      - name: orders
+        description: Number of non-NULL-price orders for this product.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: net_revenue
+        description: Sum of usd_price for non-refunded orders.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: avg_aov
+        description: Average order value for non-refunded orders.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: pct_of_orders
+        description: This product's share of all orders. Bounded [0, 100].
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+      - name: pct_of_revenue
+        description: This product's share of all net revenue. Bounded [0, 100].
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+      - name: cumulative_pct_of_revenue
+        description: >
+          Cumulative net-revenue share, in revenue-descending order.
+          Monotonically increasing. The last row equals 100 (within
+          floating-point precision).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100.01"
+
+  - name: mart_marketing_acquisition
+    description: >
+      Acquisition mix at first purchase by (channel, loyalty_status).
+      11 rows (5 channels + 1 NULL bucket, x 2 loyalty values; some
+      combos may not exist).
+
+      Powers README finding 1b: email channel disproportionately
+      acquires loyalty members AND low-AOV buyers. Note the interaction:
+      within email, loyalty -> higher AOV; within direct, loyalty ->
+      lower AOV. Channel and loyalty are not independent.
+
+      Note: 27 users with NULL first_purchase_aov excluded (matches
+      README revenue-aggregation rules). 1,153 users with NULL
+      marketing_channel cluster into a NULL row.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - marketing_channel
+            - loyalty_status
+    columns:
+      - name: marketing_channel
+        description: >
+          Snapshotted marketing_channel_at_first_purchase from dim_users.
+          May be NULL for users where the source had 'NaN'.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "1 row aggregating ~1,153 users with NULL channel"
+
+      - name: loyalty_status
+        description: Snapshotted loyalty_at_first_purchase. Binary 0/1.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: users_acquired
+        description: Count of users in this (channel, loyalty) cell.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: avg_first_aov
+        description: Average first_purchase_aov for users in this cell.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: total_first_revenue
+        description: Sum of first_purchase_aov for users in this cell.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: pct_within_channel
+        description: >
+          This cell's share of its channel's total users. Bounded [0, 100].
+          By construction, the pct_within_channel values for the two
+          loyalty rows of any single channel sum to 100.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+  - name: mart_loyalty_retention
+    description: >
+      Cohort retention table split by loyalty status at acquisition.
+      ~1,514 rows (varies with data). Grain: (cohort_month,
+      loyalty_status, months_since_acquisition).
+
+      Powers README finding 1a: loyalty members show 3.6x WORSE month-1
+      retention than non-loyalty members (0.45% vs 1.63%, simple average
+      across cohorts). Mechanism documented in mart_marketing_acquisition
+      and via product-mix analysis: loyalty disproportionately recruits
+      AirPods buyers (one-and-done), non-loyalty recruits cable-pack
+      buyers (replenishable).
+
+      Methodology critical: uses loyalty_at_first_purchase (snapshot)
+      from dim_users to prevent reverse-causality. Using current loyalty
+      status would invert the finding because users who retained had more
+      opportunities to join loyalty later.
+
+      Note: rows exist only for (cohort, loyalty, month_N) combos where
+      at least one user was active.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cohort_month
+            - loyalty_status
+            - months_since_acquisition
+    columns:
+      - name: cohort_month
+        description: First-day-of-month of user acquisition.
+        tests:
+          - not_null
+
+      - name: loyalty_status
+        description: Snapshotted loyalty_at_first_purchase. Binary 0/1.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: months_since_acquisition
+        description: >
+          Months between cohort_month and the order's purchase_month.
+          0 = acquisition month; non-negative; usually 0-47 across the
+          observation window.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: active_users
+        description: Distinct users in this cohort cell who placed at least one order in this period.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: cohort_size
+        description: Total users in this (cohort_month, loyalty_status). Denominator for retention_pct.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: retention_pct
+        description: >
+          100 * active_users / cohort_size. Bounded [0, 100].
+          At months_since_acquisition = 0, always 100.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
+
+  - name: mart_cohort_retention
+    description: >
+      Long-format cohort retention matrix. 1,049 rows.
+      Grain: (cohort_month, months_since_acquisition).
+
+      Powers the README cohort heatmap (data/outputs/cohort_retention_heatmap.png):
+      48 cohorts on the y-axis, months_since_acquisition on the x-axis,
+      retention_pct as color intensity.
+
+      The data is right-censored: late cohorts (e.g. 2022-12) have fewer
+      observable months than the data window allows. Cells exist only
+      where at least one user was active in that period.
+
+      Note: this mart agrees with mart_loyalty_retention at the
+      cohort_month level. Sum of cohort sizes across loyalty values in
+      mart_loyalty_retention equals cohort_size here.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - cohort_month
+            - months_since_acquisition
+    columns:
+      - name: cohort_month
+        description: First-day-of-month of user acquisition.
+        tests:
+          - not_null
+
+      - name: months_since_acquisition
+        description: >
+          Months between cohort_month and the order's purchase_month.
+          0 = acquisition month; non-negative.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: active_users
+        description: Distinct users in this cohort with at least one order in this period.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: cohort_size
+        description: >
+          Total users acquired in this cohort_month. Derived from
+          active_users WHERE months_since_acquisition = 0 (every
+          acquired user has a first order in their acquisition month).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: retention_pct
+        description: >
+          100 * active_users / cohort_size. Bounded [0, 100].
+          At months_since_acquisition = 0, always 100.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "BETWEEN 0 AND 100"
