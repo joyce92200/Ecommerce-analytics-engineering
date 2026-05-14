@@ -230,3 +230,8 @@ data/outputs/*
 .duckdb
 *.duckdb
 .venv/
+
+# dbt artifacts
+dbt_packages/
+dbt/logs/
+dbt/target/
