@@ -1,0 +1,67 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: >
+      Raw data loaded directly from the source Excel file by
+      scripts/load_bronze.py. Bronze tables preserve source values
+      faithfully as VARCHAR; type casting and cleaning happen in the
+      silver (staging) layer.
+    database: dev
+    schema: bronze
+    tables:
+
+      - name: orders_raw
+        description: >
+          One row per order from the source system. 108,127 rows
+          covering Jan 2019 - Dec 2022. Contains both raw and pre-cleaned
+          variants of several columns (e.g. PURCHASE_TS vs
+          PURCHASE_TS_cleaned) preserved for audit lineage.
+        columns:
+          - name: ORDER_ID
+            description: Unique identifier for an order.
+            tests:
+              - not_null
+              - unique
+          - name: USER_ID
+            description: Identifier for the user who placed the order.
+            tests:
+              - not_null
+          - name: PRODUCT_ID
+            description: Identifier for the product purchased.
+            tests:
+              - not_null
+          - name: COUNTRY_CODE_cleaned
+            description: ISO country code after source-side cleaning.
+          - name: PURCHASE_PLATFORM
+            description: Where the order was placed (website or mobile app).
+
+      - name: country_lookup_raw
+        description: >
+          Country code to region mapping. 193 rows, 191 distinct country
+          codes. Two known source defects, both surfaced by warn-level
+          tests below and resolved in stg_country_lookup:
+            1. One row has NULL COUNTRY_CODE with REGION='EMEA'
+               (orphan row, excluded in silver)
+            2. COUNTRY_CODE 'US' appears twice with conflicting regions
+               'x' and 'North America' (deterministic dedup in silver,
+               canonical region 'AMER')
+        columns:
+          - name: COUNTRY_CODE
+            description: ISO country code. Source has 1 NULL row and 1 duplicate.
+            tests:
+              - not_null:
+                  severity: warn
+                  config:
+                    meta:
+                      known_issue: "1 source row has NULL country_code (region='EMEA'); excluded by stg_country_lookup"
+              - unique:
+                  severity: warn
+                  config:
+                    meta:
+                      known_issue: "COUNTRY_CODE 'US' appears twice with conflicting regions; deduped in stg_country_lookup"
+          - name: REGION
+            description: >
+              Regional rollup. May be NULL or junk ('x') in raw form.
+              26 source countries have NULL/junk regions; mapped to
+              'Unclassified' in silver.

@@ -1,0 +1,155 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: >
+      One row per order, cleaned and typed. VARCHAR bronze columns
+      cast to proper types. Rows with unparseable purchase timestamps
+      are dropped (3 rows per README data-quality decisions).
+      NULL-price rows (~33) are retained but excluded by downstream
+      revenue calculations.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "LENGTH(user_id) <= 19"
+          config:
+            severity: warn
+            meta:
+              known_issue: "332 user_id values exceed 19 chars; floating-point coercion artifact in source"
+    columns:
+      - name: order_id
+        description: Primary key. Unique identifier for an order.
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: >
+          Foreign key to dim_users. Stored as VARCHAR (not BIGINT)
+          because 332 source rows have user_id values exceeding INT64
+          range (floating-point coercion artifact in source export).
+          String storage preserves the identifier without data loss.
+          Investigation of the 332 affected rows deferred; see README
+          'Future work' once dbt migration is complete.
+        tests:
+          - not_null
+
+
+      - name: product_id
+        description: Foreign key to dim_product.
+        tests:
+          - not_null
+
+      - name: purchase_ts
+        description: Timestamp the order was placed. NEVER NULL in silver.
+        tests:
+          - not_null
+
+      - name: purchase_month
+        description: First-day-of-month truncation of purchase_ts.
+        tests:
+          - not_null
+
+      - name: usd_price
+        description: >
+          Price in USD. ~33 rows are NULL (source data quality issue
+          documented in README). Excluded from revenue aggregations.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~33 NULL prices in source; excluded by revenue aggregations downstream"
+
+      - name: purchase_platform
+        description: Channel the order was placed on.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['website', 'mobile app']
+
+      - name: loyalty_status
+        description: 1 if the user was a loyalty member at order time, 0 otherwise.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: is_refunded
+        description: Derived flag. 1 if refund_ts is populated, 0 otherwise.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: country_code
+        description: >
+          ISO country code from source (cleaned variant). ~154 source
+          orders lack a country code; surfaced via warn-severity test
+          and preserved through silver/gold layers as NULL.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~154 orders with NULL country_code; source data gap"
+      - name: marketing_channel
+        description: >
+          Marketing channel at acquisition. Source 'NaN' strings coerced
+          to SQL NULL in silver (~1,153 rows). Accepted values tested in
+          dim_users.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~1,153 rows with NULL marketing_channel after NaN coercion"
+          - accepted_values:
+              values: ['direct', 'email', 'affiliate', 'social media', 'unknown']
+
+      - name: account_creation_device
+        description: >
+          Device the user's account was created on. Source had 'NaN'
+          string for ~1,387 NULL rows; coerced to SQL NULL in silver.
+          Used in dim_users for the device-at-acquisition snapshot
+          that supports the loyalty retention finding.
+        tests:
+          - not_null:
+              severity: warn
+              config:
+                meta:
+                  known_issue: "~1,387 rows with NULL device after NaN coercion"
+          - accepted_values:
+              values: ['desktop', 'mobile', 'unknown', 'tablet', 'tv']
+      - name: refund_ts
+        description: Timestamp the order was refunded. NULL if not refunded.
+      - name: ship_ts
+        description: Timestamp the order was shipped. NULL if not yet shipped.
+      - name: delivery_ts
+        description: Timestamp the order was delivered. NULL if not yet delivered.
+      - name: account_created_on
+        description: Timestamp the user's account was created.
+      - name: product_name
+        description: Human-readable product name. Tested in dim_product.
+
+  - name: stg_country_lookup
+    description: >
+      One row per country code. 191 rows after deduplication.
+      Source defects resolved here (per sources.yml):
+        - NULL country_code row dropped (orphan, was region='EMEA')
+        - US deduplicated (source had 2 rows with conflicting regions
+          'x' and 'North America'; canonicalized to 'AMER')
+        - NULL/junk regions mapped to 'Unclassified'
+        - US and CA forced to canonical 'AMER' region
+    columns:
+      - name: country_code
+        description: ISO country code. Primary key.
+        tests:
+          - not_null
+          - unique
+
+      - name: region
+        description: Regional rollup. AMER, EMEA, APAC, LATAM, or Unclassified.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AMER', 'EMEA', 'APAC', 'LATAM', 'Unclassified']
