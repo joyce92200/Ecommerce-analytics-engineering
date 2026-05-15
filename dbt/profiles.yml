@@ -1,0 +1,13 @@
+# dbt profile configuration for the openbuild_dbt project.
+# Lives inside the project (rather than ~/.dbt/) so that local builds,
+# CI runs, and fresh clones all use the same connection settings.
+#
+# Both local and CI runs use the same DuckDB file: dbt/dev.duckdb (relative to project root).
+
+openbuild_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      threads: 1
