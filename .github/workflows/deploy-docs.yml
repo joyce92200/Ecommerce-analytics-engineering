@@ -1,0 +1,52 @@
+name: Deploy dbt docs
+
+# Runs the full pipeline (load bronze, dbt build, dbt docs generate) on a
+# fresh Ubuntu runner, then publishes the generated docs site to GitHub Pages
+# via a gh-pages branch.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # allow manual trigger from the Actions tab
+
+permissions:
+  contents: write           # required to push to gh-pages branch
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Load Excel into DuckDB bronze
+        run: python scripts/load_bronze.py
+
+      - name: Install dbt packages
+        working-directory: dbt
+        run: dbt deps
+
+      - name: Build dbt project (all models + tests)
+        working-directory: dbt
+        run: dbt build
+
+      - name: Generate dbt docs
+        working-directory: dbt
+        run: dbt docs generate
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dbt/target
+          publish_branch: gh-pages

@@ -220,6 +220,8 @@ __marimo__/
 # Project-specific
 data/raw/*.xlsx
 data/raw/*.csv
+# Exception: source file committed for CI/Pages docs deploy (analytics-only data, no PII)
+!data/raw/2026-04-21_elist_data_cleaned.xlsx
 data/processed/*
 !data/processed/.gitkeep
 data/outputs/*
