@@ -1,9 +1,9 @@
 # OpenBuild Analytics Engineering
 
 From a raw 108K-order Excel file to a tested star schema, a live dashboard, and four findings a CFO could act on tomorrow.
-Medallion architecture · star schema · 37 passing tests.
+Medallion architecture · star schema · 170 dbt tests · auto-deployed docs.
 
-[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📄 SQL & Methodology Appendix (PDF)**](docs/openbuild_findings_one_pager.pdf)
+[**🚀 Live dashboard**](https://openbuild-analytics.streamlit.app) · [**📊 Live dbt docs**](https://joyce92200.github.io/Ecommerce-analytics-engineering/) · [**📄 SQL & Methodology Appendix (PDF)**](docs/openbuild_findings_one_pager.pdf)
 
 ---
 
@@ -262,7 +262,7 @@ Medallion architecture, physically reflected in DuckDB schemas:
 | `silver` | Typed, cleaned. 2 staging models with documented quality rules. | Views (cheap, always fresh) |
 | `gold` | 4 dimensions, 1 fact, 7 marts. | Tables (persisted, downstream-friendly) |
 
-Lineage browseable via `dbt docs serve` from `dbt/`.
+**Live docs:** [joyce92200.github.io/Ecommerce-analytics-engineering](https://joyce92200.github.io/Ecommerce-analytics-engineering/) — auto-deployed via GitHub Actions on every push to `main`. Also browseable locally via `dbt docs serve` from `dbt/`.
 
 ### Test coverage — 170 tests, 0 errors, 14 documented warnings
 
