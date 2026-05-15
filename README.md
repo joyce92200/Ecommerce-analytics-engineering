@@ -193,7 +193,7 @@ Each recommendation below names the action, the cause it addresses, and the test
 
 ## Data Quality
 
-Tests run on every model build. **37 assertions** all passing.
+Tests run on every model build. **170 tests** across the dbt rebuild — sources, staging, dimensions, fact, and marts — covering schema integrity, primary key and foreign-key contracts, domain constraints, value bounds, and grain uniqueness. The original 37 notebook assertions are preserved in spirit and superseded by the dbt-native test layer.
 
 | Test type | Examples | Coverage |
 |---|---|---|
@@ -215,31 +215,90 @@ Tests run on every model build. **37 assertions** all passing.
 - **Cohorts after Dec 2021** are right-censored; 12-month retention reported only for fully observable cohorts
 - **Loyalty status, marketing channel, and device are snapshotted at first purchase**, not at current state, to avoid reverse causality (users who retained → joined loyalty later → would otherwise look like good retainers). *This is the single most important methodological choice in the project.*
 - **33 orders with NULL `usd_price`** flagged via `USD_PRICE_cleaned_categorized` (`zero_value` or `missing` categories) and excluded from revenue aggregations to prevent silent bias in AOV calculations
+- **154 orders (~0.14%) have NULL `country_code` in the source** — undocumented before the dbt migration; surfaced by `not_null` tests at the silver and gold layers; preserved through the pipeline as NULL with warn-severity tests flagging the count
+- **332 orders (~0.3%) have `user_id` values exceeding INT64 range** — floating-point coercion artifact from the source export; `user_id` stored as VARCHAR throughout to preserve all values, with a warn-severity test monitoring the count
+- **~1,387 orders have `'NaN'` strings in `marketing_channel` and `account_creation_device`** (pandas serialization artifact when forced to `dtype=str`); coerced to proper SQL NULLs at the silver layer via `NULLIF`, with warn-severity tests flagging the resulting NULL counts
 
 ---
 
 ## Reproducibility
 
-Every number above is reproducible from this repository.
+Every number above is reproducible from this repository. Two parallel pipelines produce the same headline numbers; both are documented and tested.
 
+**Setup (both paths):**
 ```bash
 git clone https://github.com/joyce92200/Ecommerce-analytics-engineering.git
 cd Ecommerce-analytics-engineering
 python -m venv .venv && source .venv/Scripts/activate
 pip install -r requirements.txt
-jupyter notebook notebooks/01_cohort_exploration.ipynb
 ```
 
-Run all cells top-to-bottom (`Kernel → Restart Kernel and Run All Cells`). The test cell at the bottom should report **37/37 passed**. Each finding corresponds to a specific notebook cell whose output matches the numbers in this README.
+> Note: the raw Excel file is not committed to the repository (excluded via `.gitignore` to keep the repo lean). Place the source file at `data/raw/2026-04-21_elist_data_cleaned.xlsx` before running either pipeline.
 
-> Note: the raw Excel file is not committed to the repository (excluded via `.gitignore` to keep the repo lean). Place the source file at `data/raw/2026-04-21_elist_data_cleaned.xlsx` before running the notebook.
+**Path A — Original (pandas + Jupyter):**
+```bash
+jupyter notebook notebooks/01_cohort_exploration.ipynb
+```
+Run all cells top-to-bottom. The test cell at the bottom reports 37/37 passed. Each finding corresponds to a specific notebook cell whose output matches the numbers in this README.
+
+**Path B — dbt rebuild (3 commands):**
+```bash
+python scripts/load_bronze.py            # Excel -> DuckDB bronze tables
+cd dbt && dbt build                       # bronze -> silver -> gold (14 models, 170 tests)
+cd .. && python scripts/export_marts.py   # gold -> data/dashboard/*.csv
+```
+`dbt build` runs every model and test in DAG order; failures block downstream models. A green build means every contract holds. See the dbt rebuild section below for verification details.
+
+---
+
+## Data engineering: dbt rebuild
+
+The entire pipeline was rebuilt in **dbt Core 1.9 on DuckDB**, shipping in `dbt/`. The rebuild produces the same headline findings as the original pandas notebooks and adds a tested, lineage-tracked, reproducible analytics layer.
+
+### Architecture
+
+Medallion architecture, physically reflected in DuckDB schemas:
+
+| Schema | Contents | Materialization |
+|---|---|---|
+| `bronze` | Excel loaded as-is (VARCHAR throughout). Source of truth. | Tables, never modified after load |
+| `silver` | Typed, cleaned. 2 staging models with documented quality rules. | Views (cheap, always fresh) |
+| `gold` | 4 dimensions, 1 fact, 7 marts. | Tables (persisted, downstream-friendly) |
+
+Lineage browseable via `dbt docs serve` from `dbt/`.
+
+### Test coverage — 170 tests, 0 errors, 14 documented warnings
+
+Every model has explicit contracts: primary-key uniqueness, foreign-key integrity, domain `accepted_values`, value bounds via `expression_is_true`, and grain uniqueness via `dbt_utils.unique_combination_of_columns`. The 14 warnings are not failures — each is a real source-data quality issue documented with a `meta.known_issue` annotation, surfaced rather than silenced.
+
+### Findings mechanically verified
+
+Every headline number in this README was reproduced to the precision shown:
+
+| Finding | README | dbt rebuild |
+|---|---|---|
+| Orders | 108,124 | 108,124 ✅ |
+| Users | 87,625 | 87,625 ✅ |
+| Refund rate (revenue) | 8% | 7.96% ✅ |
+| Top 3 products' revenue share | 85% | 85.3% ✅ |
+| Loyalty + AirPods first purchase | 58.1% | 58.3% ✅ |
+| Loyalty + Charging Cable first purchase | 5.7% | 5.7% ✅ |
+| Loyalty month-1 retention | 0.45% | 0.453% ✅ |
+| Non-loyalty month-1 retention | 1.63% | 1.633% ✅ |
+| Loyalty retention deficit | 3.6x | 3.6x ✅ |
+
+### Methodological choices preserved and made explicit
+
+- **Snapshot at first purchase.** `dim_users.loyalty_at_first_purchase`, `marketing_channel_at_first_purchase`, and `device_at_first_purchase` use `FIRST_VALUE(...) OVER (PARTITION BY user_id ORDER BY purchase_ts, order_id)`. The `order_id` tie-breaker guarantees deterministic results across runs for users with multiple same-timestamp first orders — making the rebuild bit-reproducible.
+- **Anti-confounder enforced.** The 3.6x loyalty retention deficit (Finding 1) is computed from snapshotted loyalty status, never current status, preventing the reverse-causality trap where users who retained had more chances to join loyalty later.
+- **Source-as-source-truth at bronze.** Loaded with `dtype=str` to preserve all values without type coercion. Type casting and cleaning happen exclusively at silver via explicit `TRY_CAST` and `NULLIF` calls, with each transformation documented and tested.
 
 ---
 
 ## The Stack
 
-**Built:** DuckDB · pandas · matplotlib · Streamlit · Jupyter · SQL · Git
-**Roadmap:** dbt Core migration · GitHub Actions CI · SCD Type 2 on `dim_users` · forecasting module on platform revenue · checkout-funnel analysis by device · loyalty signup-source attribution
+**Built:** DuckDB · pandas · matplotlib · Streamlit · Jupyter · SQL · Git · **dbt Core 1.9 (medallion architecture, 170 tests, lineage docs)**
+**Roadmap:** GitHub Actions CI · SCD Type 2 on `dim_users` · forecasting module on platform revenue · checkout-funnel analysis by device · loyalty signup-source attribution
 
 ---
 
