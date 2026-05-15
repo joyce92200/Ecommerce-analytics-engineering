@@ -218,6 +218,9 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Project-specific
+# dbt-generated machine-local file (anonymous usage UUID)
+dbt/.user.yml
+
 data/raw/*.xlsx
 data/raw/*.csv
 # Exception: source file committed for CI/Pages docs deploy (analytics-only data, no PII)

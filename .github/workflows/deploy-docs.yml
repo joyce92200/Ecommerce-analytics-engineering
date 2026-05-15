@@ -34,15 +34,15 @@ jobs:
 
       - name: Install dbt packages
         working-directory: dbt
-        run: dbt deps
+        run: dbt deps --profiles-dir .
 
       - name: Build dbt project (all models + tests)
         working-directory: dbt
-        run: dbt build
+        run: dbt build --profiles-dir .
 
       - name: Generate dbt docs
         working-directory: dbt
-        run: dbt docs generate
+        run: dbt docs generate --profiles-dir .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
